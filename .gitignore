@@ -1,0 +1,103 @@
+# ============================================================
+# AxiomGuard
+# ============================================================
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# Type checking / linting
+.mypy_cache/
+.ruff_cache/
+.pyright/
+
+# Environment variables / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+secrets/
+credentials/
+
+# IDE / editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Operating system
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# ML / experiment artifacts
+mlruns/
+wandb/
+runs/
+artifacts/
+checkpoints/
+
+# Model files
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.joblib
+*.pkl
+
+# DVC local cache
+.dvc/cache/
+.dvc/tmp/
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Local/private datasets
+data/raw/
+data/private/
+data/local/
+
+# Generated reports
+reports/generated/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Windows / PowerShell
+*.stackdump
