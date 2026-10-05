@@ -3,8 +3,19 @@ requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "axiomguard"
+name = "axiomeval"
 version = "0.1.0"
-description = "Security testing and assurance platform for AI agents and AI-enabled systems."
+description = "Reproducible evaluation and assurance for AI systems — week-1 local lab."
 readme = "README.md"
 requires-python = ">=3.12"
+
+dependencies = [
+    "PyYAML>=6.0.3,<7",
+]
+
+[project.scripts]
+axiomeval = "axiomeval.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["axiomeval*"]

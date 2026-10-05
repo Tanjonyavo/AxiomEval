@@ -1,5 +1,5 @@
 # ============================================================
-# AxiomGuard
+# AxiomEval
 # ============================================================
 
 # Python
@@ -101,3 +101,5 @@ reports/generated/
 
 # Windows / PowerShell
 *.stackdump
+# Local historical backups
+docs/backups/
