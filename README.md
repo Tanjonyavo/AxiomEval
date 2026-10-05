@@ -1,18 +1,18 @@
 # AxiomEval
 
-Prototype Python pour construire des évaluations reproductibles de systèmes IA : observations structurées, contrôles déterministes, décisions expliquées et rapports JSON/HTML.
+Python prototype for building reproducible evaluations of AI systems: structured observations, deterministic controls, explainable decisions, and JSON/HTML reports.
 
-## État actuel
+## Current Status
 
-Le socle de semaine 1 est exécutable localement. Il valide une configuration, relie une cible et un scénario à une exécution, vérifie les preuves, détecte un outil interdit et produit un verdict.
+The Week 1 foundation is executable locally. It validates a configuration, links a target and a scenario to a run, verifies evidence, detects a forbidden tool, and produces a verdict.
 
-**Les quatre démonstrations utilisent des observations synthétiques.** Aucun modèle IA ni outil métier n’est exécuté. Cette version sert à vérifier l’architecture et les règles du contrôle ; elle n’est pas prête pour la production.
+**All four demonstrations use synthetic observations.** No AI model or business tool is actually executed. This version is intended to validate the architecture and control rules; it is not production-ready.
 
 ## Installation
 
-Prérequis : **Python 3.12 ou plus récent** et Git. PyYAML est la seule dépendance d’exécution. Aucun GPU ni clé API n’est nécessaire.
+Requirements: **Python 3.12 or newer** and Git. PyYAML is the only runtime dependency. No GPU or API key is required.
 
-Depuis PowerShell :
+From PowerShell:
 
 ```powershell
 git clone https://github.com/Tanjonyavo/AxiomEval.git
@@ -22,9 +22,9 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m axiomeval --version
 ```
 
-Sous Linux ou macOS, utiliser `python3` pour créer l’environnement et `.venv/bin/python` pour les commandes suivantes. Exécuter les exemples depuis la racine du dépôt.
+On Linux or macOS, use `python3` to create the environment and `.venv/bin/python` for the following commands. Run the examples from the repository root.
 
-## Démonstrations
+## Demonstrations
 
 ```powershell
 .\.venv\Scripts\python.exe -m axiomeval check-config
@@ -34,21 +34,21 @@ Sous Linux ou macOS, utiliser `python3` pour créer l’environnement et `.venv/
 .\.venv\Scripts\python.exe -m axiomeval demo --case uncertain
 ```
 
-Avec la configuration par défaut :
+With the default configuration:
 
-| Cas | Verdict | Code de sortie | Signification |
+| Case | Verdict | Exit Code | Meaning |
 |---|---|---:|---|
-| `safe` | `PROMOTE` | 0 | Le contrôle configuré est satisfait. |
-| `violation` | `REJECT` | 10 | Un outil interdit a été observé sans ambiguïté. |
-| `missing` | `INCOMPLETE` | 11 | La preuve requise manque. |
-| `uncertain` | `HOLD` | 12 | L’observation demande une revue. |
-| Erreur de configuration ou d’écriture | Erreur | 2 | La commande ne peut pas accomplir le travail. |
+| `safe` | `PROMOTE` | 0 | The configured control is satisfied. |
+| `violation` | `REJECT` | 10 | A forbidden tool was observed unambiguously. |
+| `missing` | `INCOMPLETE` | 11 | Required evidence is missing. |
+| `uncertain` | `HOLD` | 12 | The observation requires review. |
+| Configuration or write error | Error | 2 | The command cannot complete the requested work. |
 
-Les codes 10, 11 et 12 sont des résultats attendus du contrôle. `PROMOTE` reste une recommandation limitée au périmètre testé et ne déclenche aucun déploiement.
+Exit codes 10, 11, and 12 are expected control outcomes. `PROMOTE` remains a recommendation limited to the tested scope and does not trigger any deployment.
 
-Chaque exécution écrit `report.json` et `report.html` dans un dossier distinct sous `reports/generated/`. Les chemins sont affichés dans le terminal. Ouvrir le HTML dans un navigateur pour lire le résultat.
+Each run writes `report.json` and `report.html` to a separate directory under `reports/generated/`. The paths are displayed in the terminal. Open the HTML file in a browser to review the result.
 
-Options disponibles : `--config configs/default.yaml`, `--output reports/generated` et `--help`. La commande installée `axiomeval` utilise la même entrée que `python -m axiomeval`.
+Available options include `--config configs/default.yaml`, `--output reports/generated`, and `--help`. The installed `axiomeval` command uses the same entry point as `python -m axiomeval`.
 
 ## Tests
 
@@ -56,27 +56,27 @@ Options disponibles : `--config configs/default.yaml`, `--output reports/generat
 .\.venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
 
-Les 21 tests couvrent la configuration, les identifiants, les verdicts, les preuves manquantes/altérées/périmées/mal liées, les doublons, le rendu HTML et la CLI. Voir les [résultats et limites de validation](docs/semaine-01/validation.md).
+The 21 tests cover configuration, identifiers, verdicts, missing/tampered/stale/mislinked evidence, duplicates, HTML rendering, and the CLI. See the [validation results and limitations](docs/semaine-01/validation.md).
 
 ## Architecture
 
 ```text
-Configuration → Cible + scénario → Exécution + preuves
+Configuration → Target + Scenario → Run + Evidence
                                       ↓
-                           Évaluation déterministe
+                           Deterministic Evaluation
                                       ↓
-                           Décision et ses raisons
+                           Decision and Reasons
                                       ↓
-                              JSON + HTML
+                               JSON + HTML
 ```
 
-Le paquet `src/axiomeval/` sépare les modèles métier, l’évaluation, la politique de décision, les rapports et la CLI. Les modèles restent indépendants des entrées/sorties.
+The `src/axiomeval/` package separates domain models, evaluation logic, decision policy, reporting, and the CLI. Domain models remain independent of input/output concerns.
 
-- [Architecture et contrats](docs/architecture.md)
-- [Choix de conception et alternatives](docs/decisions.md)
+- [Architecture and Contracts](docs/architecture.md)
+- [Design Decisions and Alternatives](docs/decisions.md)
 
-## Limites
+## Limitations
 
-Les empreintes vérifient la cohérence locale du contenu ; elles n’authentifient pas son auteur. Les observations d’outils de cette version ne constituent pas encore des trajectoires temporelles. Les modèles appris, mesures statistiques et contrôles d’accès de production restent à développer.
+Fingerprints verify local content consistency; they do not authenticate the author of the content. Tool observations in this version do not yet represent temporal trajectories. Learned models, statistical measurements, and production-grade access controls still need to be developed.
 
-Utiliser des données synthétiques : les rapports incluent les paramètres du scénario et cette version ne réalise pas encore la suppression des données sensibles.
+Use synthetic data: reports include scenario parameters, and this version does not yet perform sensitive-data removal.
