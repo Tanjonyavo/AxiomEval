@@ -1,0 +1,146 @@
+{
+  "schema": 1,
+  "synthetique": true,
+  "id": "TX-01-comparaison-synthetique",
+  "oracle": "oracle-succes-binaire-v1",
+  "reference": "reference-v1",
+  "candidate": "candidate-v2",
+  "repetitions": 2,
+  "budget_groupes": 24,
+  "tirages_bootstrap": 1000,
+  "graine": 7125,
+  "alpha": 0.05,
+  "marge": 0.05,
+  "poids_familles": {
+    "routines": 0.6,
+    "cas_limites": 0.4
+  },
+  "taches": [
+    {
+      "id": "routines-pilote-01",
+      "groupe": "G-routines-pilote-01",
+      "famille": "routines",
+      "partition": "pilote"
+    },
+    {
+      "id": "routines-pilote-02",
+      "groupe": "G-routines-pilote-02",
+      "famille": "routines",
+      "partition": "pilote"
+    },
+    {
+      "id": "routines-pilote-03",
+      "groupe": "G-routines-pilote-03",
+      "famille": "routines",
+      "partition": "pilote"
+    },
+    {
+      "id": "routines-pilote-04",
+      "groupe": "G-routines-pilote-04",
+      "famille": "routines",
+      "partition": "pilote"
+    },
+    {
+      "id": "routines-evaluation-01",
+      "groupe": "G-routines-evaluation-01",
+      "famille": "routines",
+      "partition": "evaluation"
+    },
+    {
+      "id": "routines-evaluation-02",
+      "groupe": "G-routines-evaluation-02",
+      "famille": "routines",
+      "partition": "evaluation"
+    },
+    {
+      "id": "routines-evaluation-03",
+      "groupe": "G-routines-evaluation-03",
+      "famille": "routines",
+      "partition": "evaluation"
+    },
+    {
+      "id": "routines-evaluation-04",
+      "groupe": "G-routines-evaluation-04",
+      "famille": "routines",
+      "partition": "evaluation"
+    },
+    {
+      "id": "routines-evaluation-05",
+      "groupe": "G-routines-evaluation-05",
+      "famille": "routines",
+      "partition": "evaluation"
+    },
+    {
+      "id": "routines-evaluation-06",
+      "groupe": "G-routines-evaluation-06",
+      "famille": "routines",
+      "partition": "evaluation"
+    },
+    {
+      "id": "routines-evaluation-01-bis",
+      "groupe": "G-routines-evaluation-01",
+      "famille": "routines",
+      "partition": "evaluation"
+    },
+    {
+      "id": "cas_limites-pilote-01",
+      "groupe": "G-cas_limites-pilote-01",
+      "famille": "cas_limites",
+      "partition": "pilote"
+    },
+    {
+      "id": "cas_limites-pilote-02",
+      "groupe": "G-cas_limites-pilote-02",
+      "famille": "cas_limites",
+      "partition": "pilote"
+    },
+    {
+      "id": "cas_limites-pilote-03",
+      "groupe": "G-cas_limites-pilote-03",
+      "famille": "cas_limites",
+      "partition": "pilote"
+    },
+    {
+      "id": "cas_limites-pilote-04",
+      "groupe": "G-cas_limites-pilote-04",
+      "famille": "cas_limites",
+      "partition": "pilote"
+    },
+    {
+      "id": "cas_limites-evaluation-01",
+      "groupe": "G-cas_limites-evaluation-01",
+      "famille": "cas_limites",
+      "partition": "evaluation"
+    },
+    {
+      "id": "cas_limites-evaluation-02",
+      "groupe": "G-cas_limites-evaluation-02",
+      "famille": "cas_limites",
+      "partition": "evaluation"
+    },
+    {
+      "id": "cas_limites-evaluation-03",
+      "groupe": "G-cas_limites-evaluation-03",
+      "famille": "cas_limites",
+      "partition": "evaluation"
+    },
+    {
+      "id": "cas_limites-evaluation-04",
+      "groupe": "G-cas_limites-evaluation-04",
+      "famille": "cas_limites",
+      "partition": "evaluation"
+    },
+    {
+      "id": "cas_limites-evaluation-05",
+      "groupe": "G-cas_limites-evaluation-05",
+      "famille": "cas_limites",
+      "partition": "evaluation"
+    },
+    {
+      "id": "cas_limites-evaluation-06",
+      "groupe": "G-cas_limites-evaluation-06",
+      "famille": "cas_limites",
+      "partition": "evaluation"
+    }
+  ]
+}
