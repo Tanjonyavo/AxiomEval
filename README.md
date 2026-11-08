@@ -50,13 +50,19 @@ Chaque exécution écrit `report.json` et `report.html` dans un dossier distinct
 
 Options disponibles : `--config configs/default.yaml`, `--output reports/generated` et `--help`. La commande installée `axiomeval` utilise la même entrée que `python -m axiomeval`.
 
+## Comparaison appariée hors ligne
+
+[TX-01](labs/README.md) vérifie un plan synthétique, apparie les exécutions de deux versions, calcule un écart par groupes et rapporte le signal de permission séparément. Le JSON exporte les lignes normalisées et les coûts. Les 6 tests de TX‑01 s’ajoutent aux 26 tests du socle S1.
+
 ## Tests
 
 ```powershell
 .\.venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
 
-Les 21 tests couvrent la configuration, les identifiants, les verdicts, les preuves manquantes/altérées/périmées/mal liées, les doublons, le rendu HTML et la CLI. Voir les [résultats et limites de validation](docs/semaine-01/validation.md).
+Les 26 tests du socle S1 couvrent la configuration (y compris YAML trop imbriqué et texte non encodable en UTF-8), les identifiants, les priorités des verdicts, les preuves manquantes/altérées/périmées/mal liées, les doublons, l'égalité des données JSON/HTML et la CLI. Voir les [résultats et limites de validation](docs/semaine-01/validation.md) et l'[audit du 2 novembre 2026](docs/semaine-01/audit.md).
+
+Deux supports pédagogiques décrivent le code après correction : [01 - Résumé de la semaine 1](docs/semaine-01/pdf/01-resume-semaine-1.pdf) et [02 - Comprendre et maîtriser techniquement la semaine 1](docs/semaine-01/pdf/02-comprendre-maitriser-semaine-1.pdf).
 
 ## Architecture
 
@@ -80,3 +86,9 @@ Le paquet `src/axiomeval/` sépare les modèles métier, l’évaluation, la pol
 Les empreintes vérifient la cohérence locale du contenu ; elles n’authentifient pas son auteur. Les observations d’outils de cette version ne constituent pas encore des trajectoires temporelles. Les modèles appris, mesures statistiques et contrôles d’accès de production restent à développer.
 
 Utiliser des données synthétiques : les rapports incluent les paramètres du scénario et cette version ne réalise pas encore la suppression des données sensibles.
+
+## Parcours intégré de développement et d’apprentissage
+
+La [roadmap active 18 - AXM, produit et recherche](docs/18%20-%20Refonte%20AXM%20-%20Produit%20et%20recherche/00%20-%20Commencer%20ici.md) organise la reprise depuis ce socle, avec 132 notions, 51 laboratoires et les choix de périmètre scientifique. Les statuts techniques ci-dessus ne sont pas modifiés par ce calendrier.
+
+La refonte AXM 2.0 ajoute douze blocs mathématiques et un avant-projet de recherche. [AXM-07 et R6](docs/18%20-%20Refonte%20AXM%20-%20Produit%20et%20recherche/23%20-%20AXM-07%20-%20Regression%20et%20recherche.md) ajoutent un cours de régression et une étude à temps fixé, dans un calendrier de 136 semaines et 2 045 h. Le budget complet de formation et projet est détaillé dans la roadmap 18; les quatre démonstrations du logiciel restent synthétiques.
