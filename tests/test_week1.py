@@ -5,6 +5,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from html.parser import HTMLParser
 from dataclasses import FrozenInstanceError, replace
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -48,6 +49,21 @@ class ConfigTests(unittest.TestCase):
         for value in ("project: a\nproject: b", "1: a", "? [x, y]\n: z"):
             with self.subTest(value=value), self.assertRaises(ConfigurationError):
                 self.parse(value)
+
+    def test_excessive_yaml_nesting_is_a_configuration_error(self):
+        with self.assertRaises(ConfigurationError):
+            self.parse("project: " + "[" * 1500 + "x" + "]" * 1500)
+
+    def test_unencodable_text_is_a_configuration_error(self):
+        for section, key, value in (
+            ("project", "environment", "\ud800"), ("target", "name", "\ud800"),
+            ("target", "release", "\ud800"), ("target", "forbidden_tools", ["\ud800"]),
+            ("scenario", "name", "\ud800"), ("scenario", "attack_input", "\ud800"),
+        ):
+            data = yaml.safe_load(CONFIG.read_text(encoding="utf-8"))
+            data[section][key] = value
+            with self.subTest(section=section, key=key), self.assertRaises(ConfigurationError):
+                self.parse(yaml.safe_dump(data))
 
     def test_unknown_fields_and_wrong_types(self):
         for section, key, value in (
@@ -103,6 +119,19 @@ class DomainAndGateTests(unittest.TestCase):
     def test_safe_observation_promotes_scoped_check(self):
         self.assertEqual(self.verdict(make_evidence(self.run, ())), Verdict.PROMOTE)
 
+    def test_domain_rejects_unencodable_text(self):
+        for construct in (
+            lambda: Target("\ud800", "v1", ("export",)),
+            lambda: Scenario("protected", "\ud800"),
+            lambda: make_evidence(self.run, ("\ud800",)),
+        ):
+            with self.subTest(construct=construct), self.assertRaises(ValidationError):
+                construct()
+
+    def test_incomplete_takes_priority_over_uncertainty(self):
+        evidence = make_evidence(self.run, (), uncertain=True)
+        self.assertEqual(self.verdict(evidence, count=2), Verdict.INCOMPLETE)
+
     def test_violation_links_finding_to_evidence(self):
         evidence = make_evidence(self.run, ("export",))
         evaluation = self.evaluation(evidence)
@@ -152,7 +181,7 @@ class DomainAndGateTests(unittest.TestCase):
 class ReportingAndCliTests(unittest.TestCase):
     def test_reports_share_verdict_and_escape_hostile_html(self):
         config = load_config(CONFIG)
-        config = replace(config, scenario=Scenario("<script>alert(1)</script>", "<img src=x onerror=alert(1)>"))
+        config = replace(config, scenario=Scenario("Été <script>alert(1)</script>", "<img src=x onerror=alert(1)>"))
         result = run_demo(config, "safe")
         with tempfile.TemporaryDirectory() as temp:
             json_path, html_path = write_reports(config, result, Path(temp))
@@ -164,6 +193,28 @@ class ReportingAndCliTests(unittest.TestCase):
             self.assertIn("&lt;script&gt;", html)
             self.assertNotIn("<script>", html)
             self.assertNotIn("<img src=x", html)
+            class ReportText(HTMLParser):
+                def __init__(self):
+                    super().__init__(convert_charrefs=True)
+                    self.in_pre = False
+                    self.parts = []
+
+                def handle_starttag(self, tag, attrs):
+                    if tag == "pre":
+                        self.in_pre = True
+
+                def handle_endtag(self, tag):
+                    if tag == "pre":
+                        self.in_pre = False
+
+                def handle_data(self, data):
+                    if self.in_pre:
+                        self.parts.append(data)
+
+            parsed = ReportText()
+            parsed.feed(html)
+            self.assertEqual(json.loads("".join(parsed.parts)), payload)
+            self.assertEqual(payload["configuration"]["scenario"]["name"], config.scenario.name)
             with self.assertRaises(FileExistsError):
                 write_reports(config, result, Path(temp))
 
@@ -198,6 +249,28 @@ class ReportingAndCliTests(unittest.TestCase):
     def test_check_config_and_version(self):
         self.assertEqual(self.invoke("check-config").returncode, 0)
         self.assertIn("AxiomEval 0.1.0", self.invoke("--version").stdout)
+
+    def test_cli_handles_nested_yaml_and_unencodable_text(self):
+        contents = (
+            "project: " + "[" * 1500 + "private_marker" + "]" * 1500,
+            CONFIG.read_text(encoding="utf-8").replace("support-agent-fixture", '"\\uD800"'),
+        )
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "bad.yaml"
+            output = Path(temp) / "reports"
+            for content in contents:
+                path.write_text(content, encoding="utf-8")
+                for command in ("check-config", "demo"):
+                    args = [command, "--config", str(path)]
+                    if command == "demo":
+                        args += ["--output", str(output)]
+                    with self.subTest(command=command, content_length=len(content)):
+                        result = self.invoke(*args)
+                        self.assertEqual(result.returncode, 2)
+                        self.assertNotIn("Traceback", result.stderr)
+                        self.assertNotIn("private_marker", result.stderr)
+                        self.assertEqual(result.stdout, "")
+                        self.assertFalse(output.exists())
 
     def test_domain_has_no_infrastructure_imports(self):
         for path in (ROOT / "src/axiomeval/models").glob("*.py"):

@@ -5,6 +5,10 @@ from axiomeval.errors import ValidationError
 def text(value: str, field: str) -> str:
     if not isinstance(value, str) or not value.strip():
         raise ValidationError(f"{field} must be a nonempty string")
+    try:
+        value.encode("utf-8")
+    except UnicodeEncodeError as exc:
+        raise ValidationError(f"{field} must be valid UTF-8 text") from exc
     return value.strip()
 
 

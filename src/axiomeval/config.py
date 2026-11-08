@@ -56,7 +56,7 @@ def load_config(path: str | Path) -> Config:
         data = yaml.load(content, Loader=UniqueKeyLoader)
     except (OSError, UnicodeError) as exc:
         raise ConfigurationError("Configuration file cannot be read as UTF-8") from exc
-    except yaml.YAMLError as exc:
+    except (yaml.YAMLError, RecursionError) as exc:
         raise ConfigurationError("Invalid YAML configuration") from exc
     root = mapping(data, {"project", "logging", "target", "scenario", "policy"}, "root")
     project = mapping(root["project"], {"name", "environment"}, "project")
