@@ -103,3 +103,7 @@ reports/generated/
 *.stackdump
 # Local historical backups
 docs/backups/
+
+# Local archives and Windows shortcuts
+.archives-locales/
+*.lnk
