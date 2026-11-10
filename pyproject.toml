@@ -19,6 +19,10 @@ api = [
     "uvicorn>=0.30,<1",
     "httpx>=0.27,<1",
 ]
+ml = [
+    "numpy>=2,<3",
+    "scikit-learn>=1.5,<2",
+]
 
 [project.scripts]
 axiomeval = "axiomeval.cli:main"

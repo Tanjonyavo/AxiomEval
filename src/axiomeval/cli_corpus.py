@@ -33,6 +33,9 @@ def register(commands) -> None:
     sec = commands.add_parser("security-report", help="Security report by attack family across releases")
     sec.add_argument("--runs", type=Path, nargs="+", required=True)
     sec.add_argument("--out", type=Path, required=True)
+    ml = commands.add_parser("ml-baselines", help="S9 baselines on trajectory prefixes (task B)")
+    ml.add_argument("--runs", type=Path, nargs="+", required=True)
+    ml.add_argument("--out", type=Path, required=True)
     serve = commands.add_parser("serve", help="Local REST API (token in AXIOMEVAL_API_TOKEN)")
     serve.add_argument("--db", type=Path, default=Path("data/axiomeval.db"))
     serve.add_argument("--port", type=int, default=8765)
@@ -40,7 +43,7 @@ def register(commands) -> None:
 
 def dispatch(args, exit_codes) -> int | None:
     handlers = {"corpus": _corpus, "collect": _collect, "compare": _compare, "security-report": _security,
-                "serve": _serve}
+                "serve": _serve, "ml-baselines": _ml}
     if args.command not in handlers:
         return None
     try:
@@ -87,6 +90,19 @@ def _collect(args, _codes) -> int:
                      base / "kb", orders, CANARIES, args.out, args.draws,
                      tuple(args.partitions) if args.partitions else None, limit=args.limit)
     print(json.dumps(result))
+    return 0
+
+
+def _ml(args, _codes) -> int:
+    from axiomeval.collection import load_records
+    from axiomeval.ml.baselines import experiment, write_report
+    from axiomeval.ml.features import to_example
+    examples = [to_example(r) for path in args.runs for r in load_records(path)]
+    report = experiment(examples, list(args.runs))
+    write_report(report, args.out)
+    summary = {seed: {m: {k: v.get(k) for k in ("pr_auc", "brier")} for m, v in res["models"].items()}
+               for seed, res in report["frozen_split"].items()}
+    print(json.dumps(summary, indent=1))
     return 0
 
 
