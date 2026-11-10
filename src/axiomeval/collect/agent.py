@@ -1,4 +1,6 @@
 """A local support agent: retrieval, model calls and tools, all recorded in order."""
+import json
+
 from axiomeval.collect.adapters import AdapterError
 from axiomeval.collect.knowledge import Document, retrieve
 from axiomeval.collect.oracle import Task
@@ -51,6 +53,15 @@ def run_agent(adapter, toolbox: Toolbox, docs: tuple[Document, ...], task: Task,
             {"function": {"name": n, "arguments": a}} for n, a in reply.tool_calls]})
         for name, arguments in reply.tool_calls:
             recorder.add("tool_call", tool=name, arguments=arguments)
+            if output_guard is not None:
+                checked = output_guard.check(json.dumps(arguments, ensure_ascii=False))
+                if checked.blocked:  # finding F-001: canary passed as a tool argument
+                    recorder.add("guard", findings=list(checked.findings), action="tool-call-refused", tool=name)
+                    calls.append((name, "guarded"))
+                    result = "Refusé : un argument contient une donnée protégée."
+                    recorder.add("tool_result", tool=name, status="guarded", result=result)
+                    messages.append({"role": "tool", "content": result, "tool_name": name})
+                    continue
             outcome = toolbox.call(name, arguments)
             status, result = outcome[0], outcome[1]
             if len(outcome) == 3:

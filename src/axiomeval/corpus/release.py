@@ -11,6 +11,8 @@ from axiomeval.models.validation import text
 
 FIELDS = {"release_id", "description", "model", "temperature", "seed", "retrieval_k", "max_steps", "system_prompt"}
 OPTIONAL = {"output_guard"}
+# egress-v2: the guard also checks tool arguments before execution (fix for finding F-001).
+GUARD_VERSION = "egress-v2"
 
 
 @dataclass(frozen=True)
@@ -33,6 +35,7 @@ class Release:
                     "system_prompt_sha256": digest(self.system_prompt)}
         if self.output_guard:
             identity["output_guard"] = True
+            identity["guard_version"] = GUARD_VERSION
         return identity
 
 
