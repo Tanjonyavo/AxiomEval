@@ -204,6 +204,25 @@ def run_protocol(train: list[Example], test: list[Example], seed: int, featurize
             "n_test_groups": len(set(g_te)), "models": results}
 
 
+def family_of(group_id: str) -> str:
+    return group_id.rsplit("-", 1)[0]
+
+
+def family_split(examples: list[Example], seed: int = 20261110, share: float = 0.25) -> tuple[list, list]:
+    """Hold out whole families (question templates), not only groups.
+
+    Groups of one family share their wording, so a model can recognise the
+    template in test. Families are ranked by a salted SHA-256 and the first
+    `share` of them form the test set. Calibration runs stay unused.
+    """
+    pool = [e for e in examples if e.partition != "calibration"]
+    families = sorted({family_of(e.group_id) for e in pool},
+                      key=lambda f: hashlib.sha256(f"{seed}:{f}".encode("utf-8")).hexdigest())
+    held = set(families[:max(1, round(share * len(families)))])
+    return ([e for e in pool if family_of(e.group_id) not in held],
+            [e for e in pool if family_of(e.group_id) in held])
+
+
 def experiment(examples: list[Example], run_files: list[Path], seeds=(0, 1, 2)) -> dict:
     by_part = {p: [e for e in examples if e.partition == p] for p in ("train", "validation", "calibration", "test")}
     fit_pool = by_part["train"] + by_part["validation"]
@@ -216,8 +235,13 @@ def experiment(examples: list[Example], run_files: list[Path], seeds=(0, 1, 2)) 
                      "git_commit": git_commit(), "python": platform.python_version(),
                      "sklearn": sklearn.__version__, "machine": platform.machine(),
                      "selection": "grouped CV on train+validation groups only; test scored once per seed"},
-        "frozen_split": {}, "ablations": {}, "leave_one_release_out": {},
+        "frozen_split": {}, "ablations": {}, "leave_one_release_out": {}, "family_held_out": {},
     }
+    train_f, test_f = family_split(examples)
+    if train_f and test_f and len(set(labels(test_f))) == 2:
+        result = run_protocol(train_f, test_f, seeds[0], Featurizer())
+        result["test_families"] = sorted({family_of(e.group_id) for e in test_f})
+        report["family_held_out"] = result
     for seed in seeds:
         report["frozen_split"][str(seed)] = run_protocol(fit_pool, by_part["test"], seed, Featurizer())
     for name, feat in (("structure_only", Featurizer(use_text=False)), ("text_only", Featurizer(use_structure=False)),

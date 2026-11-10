@@ -3,7 +3,8 @@ import unittest
 
 import numpy as np
 
-from axiomeval.ml.baselines import Featurizer, Majority, group_bootstrap, metrics, run_protocol
+from axiomeval.ml.baselines import (Featurizer, Majority, family_of, family_split, group_bootstrap, metrics,
+                                    run_protocol)
 from axiomeval.ml.features import Example, leaked_keys, prefix, to_example
 
 
@@ -89,6 +90,16 @@ class ProtocolTests(unittest.TestCase):
         self.assertEqual(result["n_test_groups"], 8)
         self.assertGreater(models["logistic_regression"]["pr_auc"], models["majority"]["pr_auc"])
         self.assertLess(models["rule_first_step"]["brier"], models["majority"]["brier"])
+
+    def test_family_split_holds_out_whole_families(self):
+        examples = [to_example(record(f"fam{f}-{g:02d}", "SUCCESS", partition=p))
+                    for f in range(8) for g in range(3) for p in ("train", "test", "calibration")]
+        train, test = family_split(examples)
+        families = lambda xs: {family_of(e.group_id) for e in xs}  # noqa: E731
+        self.assertEqual(len(families(test)), 2)
+        self.assertFalse(families(train) & families(test))
+        self.assertTrue(all(e.partition != "calibration" for e in train + test))
+        self.assertEqual(family_split(examples), (train, test))  # deterministic
 
 
 if __name__ == "__main__":
