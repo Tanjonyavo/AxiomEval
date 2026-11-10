@@ -1,0 +1,221 @@
+"""Build the teaching collection from the real repository.
+
+- Code volumes: every relevant file, exact content at HEAD, numbered lines,
+  with the explanation of each line range placed right after it.
+- Coverage index: significant lines (not blank, not comment-only) covered by
+  an explanation range, per file. Nothing is claimed beyond what is measured.
+- Other volumes: Markdown sources in docs/pedagogie/sources rendered to HTML.
+
+PDF printing is done by print.mjs (Playwright/Chromium).
+Usage: python tools/pedagogie/build.py
+"""
+import html
+import re
+import subprocess
+from pathlib import Path
+
+import markdown
+from pygments import highlight
+from pygments.formatters import HtmlFormatter
+from pygments.lexers import get_lexer_for_filename, TextLexer
+
+ROOT = Path(__file__).resolve().parents[2]
+PED = ROOT / "docs" / "pedagogie"
+EXPL = PED / "explications"
+OUT = PED / "build"
+INCLUDE = ["src/**/*.py", "src/**/*.sql", "tests/**/*.py", "labs/*.py", "configs/**/*.yaml",
+           "fixtures/corpus/*.json", "fixtures/security/templates.json", ".github/workflows/*.yml", "pyproject.toml"]
+WEEK = [  # first matching prefix wins
+    ("src/axiomeval/policy", "S06"), ("tests/test_policy_s06", "S06"),
+    ("src/axiomeval/corpus", "S03-S04"), ("src/axiomeval/collection", "S03-S04"), ("fixtures/corpus", "S03-S04"),
+    ("configs/releases", "S03-S04"), (".github", "S04"), ("tests/test_corpus", "S04-S05"),
+    ("src/axiomeval/stats", "S05"), ("labs/", "S05"),
+    ("src/axiomeval/security", "S07"), ("fixtures/security", "S07"), ("tests/test_security", "S07"),
+    ("src/axiomeval/api", "S08"), ("tests/test_api", "S08"), ("src/axiomeval/cli_corpus", "S04-S09"),
+    ("src/axiomeval/ml", "S09"), ("tests/test_ml", "S09"),
+    ("src/axiomeval/collect", "S02-S03"), ("src/axiomeval/agent", "S02-S03"), ("tests/test_agent", "S02-S03"),
+    ("src/axiomeval/reporting/agent", "S02-S03"), ("configs/agent", "S02"), ("tests/test_comparaison", "S05"),
+]
+VOLUMES = [("01", "Socle, agent réel et traces (S01-S03)", ("S01", "S02-S03", "S02")),
+           ("02", "Corpus, statistiques et autorisation (S03-S06)", ("S03-S04", "S04", "S04-S05", "S05", "S06")),
+           ("03", "Sécurité, API, ML et outils (S07-S09)", ("S07", "S08", "S04-S09", "S09"))]
+
+
+def head() -> str:
+    return subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, capture_output=True, text=True).stdout.strip()
+
+
+def files() -> list[Path]:
+    found = set()
+    for pattern in INCLUDE:
+        found.update(p for p in ROOT.glob(pattern) if p.is_file() and "__pycache__" not in p.parts)
+    return sorted(found, key=lambda p: p.relative_to(ROOT).as_posix())
+
+
+def week_of(rel: str) -> str:
+    return next((w for prefix, w in WEEK if rel.startswith(prefix)), "S01")
+
+
+def significant(line: str, suffix: str) -> bool:
+    s = line.strip()
+    if not s:
+        return False
+    comment = {".py": "#", ".yaml": "#", ".yml": "#", ".toml": "#", ".sql": "--"}.get(suffix)
+    return not (comment and s.startswith(comment))
+
+
+def explanations(rel: str) -> list[tuple[int, int, str]]:
+    path = EXPL / (rel.replace("/", "__") + ".md")
+    if not path.exists():
+        return []
+    text = path.read_text(encoding="utf-8")
+    parts = re.split(r"^## L(\d+)(?:-L?(\d+))?\s*$", text, flags=re.M)
+    out = []
+    for i in range(1, len(parts), 3):
+        start = int(parts[i])
+        end = int(parts[i + 1]) if parts[i + 1] else start
+        out.append((start, end, parts[i + 2].strip()))
+    return sorted(out)
+
+
+def file_intro(rel: str) -> str:
+    path = EXPL / (rel.replace("/", "__") + ".md")
+    if not path.exists():
+        return ""
+    text = path.read_text(encoding="utf-8")
+    intro = re.split(r"^## L\d+", text, maxsplit=1, flags=re.M)[0]
+    return re.sub(r"^# .*$", "", intro, count=1, flags=re.M).strip()
+
+
+def render_file(path: Path, commit: str) -> tuple[str, dict]:
+    rel = path.relative_to(ROOT).as_posix()
+    lines = path.read_text(encoding="utf-8").replace("\r\n", "\n").split("\n")
+    if lines and lines[-1] == "":
+        lines = lines[:-1]
+    try:
+        lexer = get_lexer_for_filename(path.name)
+    except Exception:
+        lexer = TextLexer()
+    fmt = HtmlFormatter(nowrap=True)
+    ranges = explanations(rel)
+    covered = set()
+    for start, end, _ in ranges:
+        covered.update(range(start, end + 1))
+    sig = [i for i, line in enumerate(lines, 1) if significant(line, path.suffix)]
+    stats = {"file": rel, "lines": len(lines), "significant": len(sig),
+             "explained": sum(1 for i in sig if i in covered), "week": week_of(rel)}
+    out = [f'<section class="file" id="{html.escape(rel)}"><h2>{html.escape(rel)}</h2>',
+           f'<p class="meta">Commit de référence <code>{commit}</code> · {len(lines)} lignes · '
+           f'{stats["explained"]}/{stats["significant"]} lignes significatives expliquées</p>']
+    intro = file_intro(rel)
+    if intro:
+        out.append(f'<div class="intro">{md(intro)}</div>')
+    cursor = 1
+    blocks = ranges or []
+    def code(a, b):
+        rows = []
+        for n in range(a, b + 1):
+            src = highlight(lines[n - 1], lexer, fmt).rstrip("\n") if lines[n - 1] else ""
+            rows.append(f'<tr><td class="ln">{n}</td><td class="src"><pre>{src}</pre></td></tr>')
+        return '<table class="code">' + "".join(rows) + "</table>"
+    for start, end, text in blocks:
+        start, end = max(start, 1), min(end, len(lines))
+        if start > cursor:
+            out.append(code(cursor, start - 1))
+        out.append(code(start, end))
+        out.append(f'<div class="expl"><p class="range">Lignes {start}–{end}</p>'
+                   f'{md(text)}</div>')
+        cursor = end + 1
+    if cursor <= len(lines):
+        out.append(code(cursor, len(lines)))
+    out.append("</section>")
+    return "\n".join(out), stats
+
+
+CSS = """
+@page { size: Letter; margin: 0.6in 0.6in 0.7in; }
+body { font-family: Calibri, 'Segoe UI', Arial, sans-serif; font-size: 10.5pt; color: #1d2433; line-height: 1.35; }
+h1 { color: #1f4e79; font-size: 22pt; } h2 { color: #1f4e79; border-bottom: 1px solid #1f4e79; font-size: 14pt; margin-top: 18px; break-after: avoid; }
+h3 { color: #1f4e79; font-size: 12pt; break-after: avoid; }
+.file { break-before: page; } .meta { color: #4a5568; font-size: 9pt; }
+table.code { border-collapse: collapse; width: 100%; font-family: Consolas, 'Courier New', monospace; font-size: 8.4pt; background: #f7f9fb; }
+table.code td { padding: 0 4px; vertical-align: top; } td.ln { color: #8a94a3; text-align: right; width: 34px; border-right: 1px solid #d5dce4; user-select: none; }
+td.src pre { margin: 0; white-space: pre-wrap; word-break: break-all; font-family: inherit; }
+.expl { border-left: 4px solid #1f4e79; background: #eef3f8; padding: 4px 10px; margin: 4px 0 10px; break-inside: avoid; font-size: 10pt; }
+.expl .range { font-weight: bold; color: #1f4e79; margin: 2px 0; } .intro { background: #fbfaf5; border: 1px solid #e6dfc8; padding: 6px 10px; }
+table { border-collapse: collapse; } th, td { border: 1px solid #c9d3de; padding: 3px 6px; font-size: 9.5pt; } th { background: #eef2f7; }
+code { font-family: Consolas, monospace; font-size: 9pt; } pre { white-space: pre-wrap; }
+.toc a { text-decoration: none; color: #1d2433; } .warn { border-left: 4px solid #b45309; background: #fdf6ec; padding: 6px 10px; }
+""" + HtmlFormatter().get_style_defs(".src")
+
+KATEX = ('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">'
+         '<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>'
+         '<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>'
+         '<script>document.addEventListener("DOMContentLoaded",()=>renderMathInElement(document.body,'
+         '{delimiters:[{left:"$$",right:"$$",display:true},{left:"\\\\(",right:"\\\\)",display:false}]}));</script>')
+
+
+MATH = re.compile(r"\$\$.+?\$\$|\\\(.+?\\\)", re.S)
+
+
+def md(text: str) -> str:
+    """Markdown to HTML without letting Markdown eat the LaTeX delimiters or underscores."""
+    spans = []
+
+    def keep(match):
+        spans.append(html.escape(match.group(0)))
+        return f"@@MATH{len(spans) - 1}@@"
+    converted = markdown.markdown(MATH.sub(keep, text), extensions=["tables", "fenced_code", "toc"])
+    return re.sub(r"@@MATH(\d+)@@", lambda m: spans[int(m.group(1))], converted)
+
+
+def page(title: str, body: str) -> str:
+    return (f'<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>{html.escape(title)}</title>'
+            f'<style>{CSS}</style>{KATEX}</head><body>{body}</body></html>')
+
+
+def build() -> None:
+    OUT.mkdir(parents=True, exist_ok=True)
+    commit = head()
+    all_stats, rendered = [], {}
+    for path in files():
+        section, stats = render_file(path, commit)
+        all_stats.append(stats)
+        rendered[stats["file"]] = (stats["week"], section)
+    for number, title, weeks in VOLUMES:
+        chosen = [(f, s) for f, (w, s) in rendered.items() if w in weeks]
+        toc = "".join(f'<li><a href="#{html.escape(f)}">{html.escape(f)}</a></li>' for f, _ in chosen)
+        body = (f"<h1>AxiomEval — Code expliqué, volume {number}</h1><p>{html.escape(title)}. Code exact du dépôt "
+                f"au commit <code>{commit}</code>, numéroté ; chaque explication suit les lignes qu'elle commente.</p>"
+                f'<h2>Fichiers</h2><ol class="toc">{toc}</ol>' + "".join(s for _, s in chosen))
+        (OUT / f"AxiomEval_Code_Explique_Volume_{number}.html").write_text(page(f"Code expliqué {number}", body),
+                                                                           encoding="utf-8")
+    write_index(all_stats, commit)
+    for src in sorted((PED / "sources").glob("*.md")):
+        body = md(src.read_text(encoding="utf-8"))
+        (OUT / (src.stem + ".html")).write_text(page(src.stem, body), encoding="utf-8")
+
+
+def write_index(stats: list[dict], commit: str) -> None:
+    volume = {w: n for n, _, ws in VOLUMES for w in ws}
+    total_sig = sum(s["significant"] for s in stats)
+    total_exp = sum(s["explained"] for s in stats)
+    rows = ["# Index du code expliqué", "",
+            f"Mesuré automatiquement par `tools/pedagogie/build.py` au commit `{commit}`. Une ligne significative est "
+            "une ligne non vide qui n'est pas un commentaire seul. Une ligne est « expliquée » si elle appartient à "
+            "une plage commentée dans `docs/pedagogie/explications/`.", "",
+            f"**Total : {len(stats)} fichiers, {sum(s['lines'] for s in stats)} lignes, {total_sig} lignes "
+            f"significatives, {total_exp} expliquées ({100 * total_exp / max(total_sig, 1):.1f} %).**", "",
+            "| Fichier | Lignes | Significatives | Expliquées | Semaine | Volume PDF | Commit | Couverture |",
+            "|---|---:|---:|---:|---|---|---|---|"]
+    for s in stats:
+        pct = 100 * s["explained"] / max(s["significant"], 1)
+        rows.append(f"| `{s['file']}` | {s['lines']} | {s['significant']} | {s['explained']} | {s['week']} | "
+                    f"{volume.get(s['week'], '—')} | `{commit}` | {pct:.0f} % |")
+    missing = [s["file"] for s in stats if s["explained"] < s["significant"]]
+    rows += ["", f"## Fichiers incomplets ({len(missing)})", ""] + [f"- `{m}`" for m in missing]
+    (PED / "INDEX_CODE_EXPLIQUE.md").write_text("\n".join(rows) + "\n", encoding="utf-8")
+
+
+if __name__ == "__main__":
+    build()
