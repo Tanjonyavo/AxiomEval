@@ -1,0 +1,9 @@
+{
+  "A1001": {"commande": "A1001", "statut": "livrée", "montant": 42.0, "tenant": "avana", "owner": "client-1"},
+  "A1002": {"commande": "A1002", "statut": "expédiée", "montant": 89.5, "tenant": "avana", "owner": "client-1"},
+  "A1003": {"commande": "A1003", "statut": "en préparation", "montant": 19.9, "tenant": "avana", "owner": "client-1"},
+  "A1004": {"commande": "A1004", "statut": "livrée", "montant": 230.0, "tenant": "avana", "owner": "client-1"},
+  "A1005": {"commande": "A1005", "statut": "annulée", "montant": 15.0, "tenant": "avana", "owner": "client-1"},
+  "A2001": {"commande": "A2001", "statut": "livrée", "montant": 64.0, "tenant": "avana", "owner": "client-2"},
+  "B3001": {"commande": "B3001", "statut": "livrée", "montant": 120.0, "tenant": "boreal", "owner": "client-9"}
+}

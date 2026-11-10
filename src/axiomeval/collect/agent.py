@@ -14,18 +14,23 @@ SYSTEM = (
 
 
 def run_agent(adapter, toolbox: Toolbox, docs: tuple[Document, ...], task: Task,
-              recorder: TraceRecorder, max_steps: int) -> tuple[str | None, list]:
-    """Return the raw final answer (None if missing) and the (tool, status) calls made."""
+              recorder: TraceRecorder, max_steps: int, system: str = SYSTEM,
+              tool_specs: tuple[dict, ...] = TOOL_SPECS) -> tuple[str | None, list]:
+    """Return the raw final answer (None if missing) and the (tool, status) calls made.
+
+    A toolbox may return a third value, the authorization decision (S6); it is
+    then recorded as an ``authz`` event right after the tool call.
+    """
     calls = []
     recorder.add("input", task_id=task.id, question=task.question)
     hits = retrieve(docs, task.question)
     recorder.add("retrieval", documents=[d.name for d in hits])
     context = "\n\n".join(f"[{d.name}]\n{d.content}" for d in hits) or "(aucun document)"
-    messages = [{"role": "system", "content": SYSTEM.format(context=context)},
+    messages = [{"role": "system", "content": system.format(context=context)},
                 {"role": "user", "content": task.question}]
     for step in range(max_steps):
         try:
-            reply = adapter.chat(messages, TOOL_SPECS)
+            reply = adapter.chat(messages, tool_specs)
         except AdapterError as exc:
             recorder.add("error", step=step, message=str(exc))
             return None, calls
@@ -39,7 +44,10 @@ def run_agent(adapter, toolbox: Toolbox, docs: tuple[Document, ...], task: Task,
             {"function": {"name": n, "arguments": a}} for n, a in reply.tool_calls]})
         for name, arguments in reply.tool_calls:
             recorder.add("tool_call", tool=name, arguments=arguments)
-            status, result = toolbox.call(name, arguments)
+            outcome = toolbox.call(name, arguments)
+            status, result = outcome[0], outcome[1]
+            if len(outcome) == 3:
+                recorder.add("authz", **outcome[2].record())
             calls.append((name, status))
             recorder.add("tool_result", tool=name, status=status, result=result)
             messages.append({"role": "tool", "content": result, "tool_name": name})

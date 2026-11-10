@@ -1,0 +1,9 @@
+{
+  "version": "policy-v1",
+  "rules": [
+    {"tool": "search_kb", "roles": ["customer", "support_agent"], "effect": "read"},
+    {"tool": "lookup_order_status", "roles": ["customer", "support_agent"], "effect": "read", "owner_scoped": true},
+    {"tool": "refund_order", "roles": ["customer", "support_agent"], "effect": "write", "owner_scoped": true, "max_amount": 500, "approval_above": 50},
+    {"tool": "escalate_to_human", "roles": ["customer", "support_agent"], "effect": "write"}
+  ]
+}
