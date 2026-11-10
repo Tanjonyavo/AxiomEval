@@ -12,11 +12,12 @@ CANARIES = ("AXM-CANARY-7F3A91C2E5", "CANARY_SYSPROMPT_51F0C2")
 
 def register(commands) -> None:
     corpus = commands.add_parser("corpus", help="Validate the grouped corpus, freeze its split, write the data card")
-    corpus.add_argument("--templates", type=Path, default=CORPUS_DIR / "templates.json")
-    corpus.add_argument("--split", type=Path, default=CORPUS_DIR / "split.json")
+    corpus.add_argument("--corpus-dir", type=Path, default=CORPUS_DIR)
     corpus.add_argument("--card", type=Path, default=Path("docs/data/DATA_CARD.md"))
     corpus.add_argument("--seed", type=int, default=20261110)
+    corpus.add_argument("--test-only", action="store_true", help="Put every group in the test partition")
     collect = commands.add_parser("collect", help="Run a release on the corpus and append real trajectories")
+    collect.add_argument("--corpus-dir", type=Path, default=CORPUS_DIR)
     collect.add_argument("--release", type=Path, required=True)
     collect.add_argument("--out", type=Path, required=True)
     collect.add_argument("--draws", type=int, default=1)
@@ -29,10 +30,17 @@ def register(commands) -> None:
     compare.add_argument("--alpha", type=float, default=0.05)
     compare.add_argument("--min-groups", type=int, default=10)
     compare.add_argument("--partitions", nargs="*", default=None)
+    sec = commands.add_parser("security-report", help="Security report by attack family across releases")
+    sec.add_argument("--runs", type=Path, nargs="+", required=True)
+    sec.add_argument("--out", type=Path, required=True)
+    serve = commands.add_parser("serve", help="Local REST API (token in AXIOMEVAL_API_TOKEN)")
+    serve.add_argument("--db", type=Path, default=Path("data/axiomeval.db"))
+    serve.add_argument("--port", type=int, default=8765)
 
 
 def dispatch(args, exit_codes) -> int | None:
-    handlers = {"corpus": _corpus, "collect": _collect, "compare": _compare}
+    handlers = {"corpus": _corpus, "collect": _collect, "compare": _compare, "security-report": _security,
+                "serve": _serve}
     if args.command not in handlers:
         return None
     try:
@@ -48,13 +56,15 @@ def dispatch(args, exit_codes) -> int | None:
 def _corpus(args, _codes) -> int:
     from axiomeval.corpus.scenarios import data_card, load_corpus
     from axiomeval.corpus.splits import assign, freeze, load_frozen
-    corpus = load_corpus(args.templates)
-    if args.split.exists():
-        partitions = load_frozen(corpus, args.split)
+    corpus = load_corpus(args.corpus_dir / "templates.json")
+    split = args.corpus_dir / "split.json"
+    if split.exists():
+        partitions = load_frozen(corpus, split)
         status = "verified"
     else:
-        partitions = assign(corpus, args.seed)
-        freeze(corpus, partitions, args.seed, args.split)
+        ratios = {"train": 0.0, "validation": 0.0, "calibration": 0.0, "test": 1.0} if args.test_only else None
+        partitions = assign(corpus, args.seed, ratios)
+        freeze(corpus, partitions, args.seed, split)
         status = "frozen"
     args.card.parent.mkdir(parents=True, exist_ok=True)
     args.card.write_text(data_card(corpus, partitions), encoding="utf-8")
@@ -69,13 +79,44 @@ def _collect(args, _codes) -> int:
     from axiomeval.corpus.scenarios import load_corpus
     from axiomeval.corpus.splits import load_frozen
     from axiomeval.policy.authz import load_policy
-    corpus = load_corpus(CORPUS_DIR / "templates.json")
-    partitions = load_frozen(corpus, CORPUS_DIR / "split.json")
-    orders = json.loads((CORPUS_DIR / "orders.json").read_text(encoding="utf-8"))
-    result = collect(load_release(args.release), corpus, partitions, load_policy(CORPUS_DIR / "policy.json"),
-                     CORPUS_DIR / "kb", orders, CANARIES, args.out, args.draws,
+    base = args.corpus_dir
+    corpus = load_corpus(base / "templates.json")
+    partitions = load_frozen(corpus, base / "split.json")
+    orders = json.loads((base / "orders.json").read_text(encoding="utf-8"))
+    result = collect(load_release(args.release), corpus, partitions, load_policy(base / "policy.json"),
+                     base / "kb", orders, CANARIES, args.out, args.draws,
                      tuple(args.partitions) if args.partitions else None, limit=args.limit)
     print(json.dumps(result))
+    return 0
+
+
+def _serve(args, _codes) -> int:
+    import os
+
+    import uvicorn
+
+    from axiomeval.api.app import create_app
+    from axiomeval.api.store import Store
+    if not os.environ.get("AXIOMEVAL_API_TOKEN"):
+        print("AxiomEval: set AXIOMEVAL_API_TOKEN before starting the API", file=sys.stderr)
+        return 2
+    args.db.parent.mkdir(parents=True, exist_ok=True)
+    store = Store(args.db, CANARIES)
+    store.migrate()
+    uvicorn.run(create_app(store), host="127.0.0.1", port=args.port, log_level="info")  # localhost only
+    return 0
+
+
+def _security(args, _codes) -> int:
+    from axiomeval.collection import load_records
+    from axiomeval.security.report import family_table, markdown
+    reports = {}
+    for path in args.runs:
+        records = load_records(path)
+        reports[records[0]["release_id"] if records else path.stem] = records
+    args.out.parent.mkdir(parents=True, exist_ok=True)
+    args.out.write_text(markdown(reports), encoding="utf-8")
+    print(json.dumps({name: family_table(recs) for name, recs in reports.items()}, ensure_ascii=False))
     return 0
 
 
