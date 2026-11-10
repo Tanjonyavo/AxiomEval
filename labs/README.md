@@ -25,4 +25,4 @@ Le plan d’allocation compare, au même nombre de groupes, la répartition équ
 
 Sur la fixture, l’évaluation contient 52 exécutions, 13 tâches et 12 groupes. L’écart pondéré est de **+12,5 points**, la borne inférieure à 95 % vaut **−59,6 points** et le résultat est **inconclusif** à marge de 5 points. Une violation déclarée reste visible séparément. Au budget de 24 groupes, le plan donne 19 groupes de routines et 5 cas limites, contre 12 et 12 pour la référence équilibrée.
 
-Le laboratoire constitue une preuve synthétique hors ligne. Le passage à une collecte réelle et aux modèles mixtes est décrit dans la [feuille de route 24](../docs/18%20-%20Refonte%20AXM%20-%20Produit%20et%20recherche/24%20-%20Transfert%20pratique%20des%20AXM.md).
+Le laboratoire constitue une preuve synthétique hors ligne. Le passage à une collecte réelle et aux modèles mixtes est prévu dans les lots suivants.

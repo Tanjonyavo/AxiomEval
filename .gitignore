@@ -107,3 +107,18 @@ docs/backups/
 # Local archives and Windows shortcuts
 .archives-locales/
 *.lnk
+
+# Personal learning path, planning and study material (kept local, not published)
+docs/16 - */
+docs/17 - */
+docs/18 - */
+AxiomEval_*Revenue_Max*.md
+README_COMPRENDRE_AXIOMEVAL.md
+docs/semaine-01/admission-hiver-2028.md
+docs/semaine-01/strategie-commerciale.md
+docs/semaine-01/cadrage.md
+docs/semaine-01/recherche.md
+docs/semaine-01/README.md
+docs/semaine-01/pdf/
+docs/semaine-06/guide/
+AxiomEval_S6_Comprendre_pour_entrevues.pdf

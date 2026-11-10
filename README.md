@@ -100,7 +100,3 @@ The `src/axiomeval/` package separates domain models, evaluation logic, decision
 ## Limitations
 
 Fingerprints verify local content consistency; they do not authenticate the author of the content. Redaction covers the planted canaries and common patterns (email, API key, Bearer token, card number), not every possible piece of personal data. The P02 run uses one small model and five tasks: counts describe those runs only. Learned models, statistical measurements, and production-grade access controls still need to be developed.
-
-## Integrated Development and Learning Path
-
-The [active roadmap 18](docs/18%20-%20Refonte%20AXM%20-%20Produit%20et%20recherche/00%20-%20Commencer%20ici.md) (in French) organizes the work from this foundation, with 132 concepts, 51 labs and the scientific scope choices. The technical statuses above are not changed by that calendar.
