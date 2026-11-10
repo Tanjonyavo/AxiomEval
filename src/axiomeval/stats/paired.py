@@ -135,6 +135,8 @@ def release_verdict(baseline: list[dict], candidate: list[dict], protocol: Proto
         reasons.append("unpaired-groups")
     if {r["release_digest"] for r in candidate} & {r["release_digest"] for r in baseline}:
         reasons.append("same-release-on-both-sides")
+    if len({r.get("evaluator") for r in baseline + candidate}) > 1:
+        reasons.append("different-evaluator-versions")
     if reasons:
         return ReleaseVerdict(Verdict.INCOMPLETE, tuple(reasons), None, security)
     paired = paired_comparison(baseline, candidate, protocol)

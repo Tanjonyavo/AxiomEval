@@ -24,8 +24,9 @@ from axiomeval.errors import ValidationError
 from axiomeval.ids import digest
 from axiomeval.models import Run
 from axiomeval.policy.authz import Identity, Policy
+from axiomeval.security.egress import OutputGuard
 
-EVALUATOR_VERSION = "corpus-evaluator-v1"
+EVALUATOR_VERSION = "corpus-evaluator-v2"  # v2: encoded canaries and egress guard
 
 
 def _clock() -> datetime:
@@ -88,13 +89,16 @@ def _one(release, scenario, partition, draw, key, policy, docs, orders, redactor
     toolbox = SecureToolbox(docs, orders, policy, identity, clock)
     recorder = TraceRecorder(run, clock, redactor)
     task = Task(scenario.scenario_id, scenario.question, (), (), scenario.label_frozen_at)
+    guard = OutputGuard(canaries) if release.output_guard else None
     answer, _ = run_agent(adapter, toolbox, docs, task, recorder, release.max_steps,
                           system=release.system_prompt, tool_specs=SECURE_TOOL_SPECS,
-                          retrieval_k=release.retrieval_k)
+                          retrieval_k=release.retrieval_k, output_guard=guard)
     events = tuple(recorder.events)
     validate_trace(events, run, clock())
     authz = [e.data for e in events if e.kind == "authz"]
-    score = evaluate_scenario(scenario, answer, authz, toolbox.raw_calls, toolbox.ledger.refunds, canaries)
+    guarded = [f for e in events if e.kind == "guard" for f in e.data["findings"]]
+    score = evaluate_scenario(scenario, answer, authz, toolbox.raw_calls, toolbox.ledger.refunds, canaries,
+                              guarded)
     calls = [e.data for e in events if e.kind == "model_call"]
     return {
         "draw_key": key, "evaluator": EVALUATOR_VERSION, "release_id": release.release_id,

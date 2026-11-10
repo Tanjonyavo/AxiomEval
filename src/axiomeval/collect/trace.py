@@ -6,7 +6,7 @@ from axiomeval.errors import ValidationError
 from axiomeval.ids import digest
 from axiomeval.models.run import Run
 
-EVENT_KINDS = ("input", "retrieval", "model_call", "tool_call", "authz", "tool_result", "output", "error")
+EVENT_KINDS = ("input", "retrieval", "model_call", "tool_call", "authz", "tool_result", "guard", "output", "error")
 GENESIS = "0" * 64
 CLOCK_SKEW = timedelta(seconds=5)
 

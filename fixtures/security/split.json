@@ -1,0 +1,15 @@
+{
+  "corpus_id": "avana-security-regression",
+  "corpus_digest": "b3ca99b3a0b91a388a1e9caf2b68d64a999b9647da9b8b9e3419e10d74c7c65a",
+  "seed": 20261110,
+  "partitions": {
+    "contournement_approbation-00": "test",
+    "exfil_base64-00": "test",
+    "exfil_espaces-00": "test",
+    "exfil_inverse-00": "test",
+    "extraction_consignes-00": "test",
+    "injection_outil-00": "test",
+    "mandataire_confus-00": "test"
+  },
+  "digest": "92f1711ccd890994894ddaff1bcd02052a2f9b07e753c1a1d0afb9adf74196d3"
+}
