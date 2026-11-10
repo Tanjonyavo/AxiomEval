@@ -70,7 +70,11 @@ def _corpus(args, _codes) -> int:
         freeze(corpus, partitions, args.seed, split)
         status = "frozen"
     args.card.parent.mkdir(parents=True, exist_ok=True)
-    args.card.write_text(data_card(corpus, partitions), encoding="utf-8")
+    docs = None
+    if (args.corpus_dir / "kb").is_dir():
+        from axiomeval.collect.knowledge import load_documents
+        docs = load_documents(args.corpus_dir / "kb")
+    args.card.write_text(data_card(corpus, partitions, docs), encoding="utf-8")
     print(json.dumps({"corpus": corpus.corpus_id, "digest": corpus.digest, "groups": len(corpus.groups),
                       "scenarios": len(corpus.scenarios), "split": status}))
     return 0

@@ -68,6 +68,9 @@ def collect(release: Release, corpus: Corpus, partitions: dict[str, str], policy
                     continue
                 record = _one(release, scenario, partitions[scenario.group_id], draw, key, policy, docs,
                               orders, redactor, canaries, adapter, clock)
+                # The same group id may exist in two corpus versions: name the corpus in every record.
+                record["corpus_id"], record["corpus_version"] = corpus.corpus_id, corpus.version
+                record["corpus_digest"] = corpus.digest
                 line = json.dumps(record, ensure_ascii=False, default=str)
                 redactor.assert_clean(line)
                 stream.write(line + "\n")
