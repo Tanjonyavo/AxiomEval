@@ -28,9 +28,14 @@ def main(argv: list[str] | None = None) -> int:
     agent = commands.add_parser("run-agent", help="Run a real local agent on frozen tasks (lot P02)")
     agent.add_argument("--config", type=Path, default=Path("configs/agent.yaml"))
     agent.add_argument("--output", type=Path, default=Path("reports/generated"))
+    from axiomeval import cli_corpus
+    cli_corpus.register(commands)
     args = parser.parse_args(argv)
     if args.command == "run-agent":
         return _run_agent(args)
+    handled = cli_corpus.dispatch(args, EXIT_CODES)
+    if handled is not None:
+        return handled
     try:
         config = load_config(args.config)
         configure_logging(config.log_level)
