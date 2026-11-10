@@ -5,7 +5,7 @@ S9-S12 can be evaluated on more than a handful of test groups. Every label is
 written here, before any run. Corpus v1 is left untouched: the runs and the
 reports made with it stay valid.
 
-Usage: python tools/corpus/build_corpus_v2.py --frozen-at 2026-11-10T20:30:00+00:00
+Usage: python tools/corpus/build_corpus_v2.py --frozen-at 2026-11-10T20:09:13+00:00
 """
 import argparse
 import json

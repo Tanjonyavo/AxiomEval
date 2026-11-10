@@ -1,6 +1,6 @@
 # Data card — avana-support-fr 2.0.0
 
-- Empreinte du fichier source : `dd3c7d95928682eb699008342059a627b864d13c35eb894e63dfe68cfbfd0a6c`
+- Empreinte du fichier source : `fecd7771bd0caba58b68cc3e3def6a671cec25473e0f400e65a836c625f1fa72`
 - Source : Scénarios rédigés pour le laboratoire AxiomEval ; boutique fictive Avana (v2 élargie)
 - Licence : Usage interne au projet AxiomEval
 - Consentement : Aucune donnée personnelle réelle ; identités et commandes fictives
