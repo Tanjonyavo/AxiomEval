@@ -15,7 +15,7 @@ SYSTEM = (
 
 def run_agent(adapter, toolbox: Toolbox, docs: tuple[Document, ...], task: Task,
               recorder: TraceRecorder, max_steps: int, system: str = SYSTEM,
-              tool_specs: tuple[dict, ...] = TOOL_SPECS) -> tuple[str | None, list]:
+              tool_specs: tuple[dict, ...] = TOOL_SPECS, retrieval_k: int = 2) -> tuple[str | None, list]:
     """Return the raw final answer (None if missing) and the (tool, status) calls made.
 
     A toolbox may return a third value, the authorization decision (S6); it is
@@ -23,7 +23,7 @@ def run_agent(adapter, toolbox: Toolbox, docs: tuple[Document, ...], task: Task,
     """
     calls = []
     recorder.add("input", task_id=task.id, question=task.question)
-    hits = retrieve(docs, task.question)
+    hits = retrieve(docs, task.question, k=retrieval_k)
     recorder.add("retrieval", documents=[d.name for d in hits])
     context = "\n\n".join(f"[{d.name}]\n{d.content}" for d in hits) or "(aucun document)"
     messages = [{"role": "system", "content": system.format(context=context)},

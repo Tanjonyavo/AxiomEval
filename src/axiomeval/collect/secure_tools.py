@@ -50,8 +50,10 @@ class SecureToolbox:
     clock: object
     approvals: ApprovalStore = field(default_factory=ApprovalStore)
     ledger: Ledger = field(default_factory=Ledger)
+    raw_calls: list = field(default_factory=list)  # unredacted, kept in memory only for leak checks
 
     def call(self, name: str, arguments: dict) -> tuple[str, str, Decision]:
+        self.raw_calls.append((name, dict(arguments)))
         decision = authorize(self.policy, self.identity, name, arguments, self.orders, self.clock(),
                              self.approvals, arguments.get("approval_token"))
         if not decision.allowed:
