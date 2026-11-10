@@ -16,4 +16,9 @@ Les semaines S04–S06 de la spécification 32 semaines n'étaient pas réalisé
 | S05 | `0ec1fca` | Comparaisons réelles de releases, empreintes des données | — | r2, r3 : REJECT ; r4 : HOLD (27 groupes insuffisants) | — |
 | S09 | `3846051` | Contrat de caractéristiques de préfixe, baselines (majorité, règle, logistique, boosting), sélection groupée, intervalles groupés, ablations, release tenue à l'écart | `tests/test_ml_s09.py` (9) : 121 OK | PR-AUC logistique 0,77 [0,47 ; 0,97], boosting 0,88 [0,62 ; 0,98], majorité 0,54 | 4 groupes de test : aucune supériorité démontrée ; pas de DVC/MLflow |
 
+| S07 | `1e4fbd6` | Data card du corpus de régression sécurité | — | 7 groupes, 21 scénarios | — |
+| Pédagogie | `9ac6dbd` | Générateur de manuels, volumes de code expliqué, manuel, maths, exercices, entrevues (PDF inspectés) | 121 OK | Couverture ligne par ligne 399 / 4 371 lignes significatives (9,1 %) | 4 fichiers expliqués à 100 % seulement |
+
+Rapport de fin de mission : `docs/progression/RAPPORT_FINAL_S24.md`.
+
 S10 à S24 : aucun commit. Voir `docs/progression/ETAT_MISSION.md`.

@@ -1,6 +1,8 @@
 # État de la mission — point de reprise
 
-Mis à jour le 2026-11-10. Branche `feat/mission-s24`, dernier commit technique `3846051`. Rien n'est poussé.
+Mis à jour le 2026-11-10. Branche `feat/mission-s24`, dernier commit technique `3846051`, manuels pédagogiques `9ac6dbd`. Rien n'est poussé. Bilan : `docs/progression/RAPPORT_FINAL_S24.md`.
+
+Régénérer les manuels : `python tools/pedagogie/build.py` puis `node tools/pedagogie/print.mjs <playwright/index.mjs>` (depuis la racine du dépôt). Pour expliquer un fichier, ajouter `docs/pedagogie/explications/<chemin avec __>.md` avec des sections `## Ldébut-Lfin`.
 
 ## Dernier module réellement terminé
 
