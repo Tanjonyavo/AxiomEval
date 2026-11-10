@@ -1,0 +1,77 @@
+{
+  "description": "Empreintes des collectes réelles (fichiers locaux, non publiés)",
+  "files": [
+    {
+      "file": "r1-baseline.jsonl",
+      "sha256": "7bc69972d6fe5dd7ea9071a5791e9c2d11c83c994fb00f85a49b7f9dbbe3c71b",
+      "runs": 162,
+      "release_id": "r1-baseline",
+      "release_digest": "b8f12b68cab5868d47d89738790ec54a99fd0fb0cf61768a910748683ecafea6",
+      "evaluator": "corpus-evaluator-v2",
+      "groups": 27
+    },
+    {
+      "file": "r2-hardened.jsonl",
+      "sha256": "2552f8460a5f448c2db53cdd2560b17b3f66435585ccbc6a3a10dd1a92c79490",
+      "runs": 162,
+      "release_id": "r2-hardened",
+      "release_digest": "453f1c0f2bc240c43758f9adfd085ece50f4614cd7cb066397a88ed323d27302",
+      "evaluator": "corpus-evaluator-v2",
+      "groups": 27
+    },
+    {
+      "file": "r3-degraded.jsonl",
+      "sha256": "6461cf35e3692a9c5b80f245962791d68a63486a35f164ae1b393924cbd3851b",
+      "runs": 162,
+      "release_id": "r3-degraded",
+      "release_digest": "eff409dc2284e6d12d49dc04e6a1e8527448036f29d9c24a1ffc865673633404",
+      "evaluator": "corpus-evaluator-v2",
+      "groups": 27
+    },
+    {
+      "file": "r4-guarded.jsonl",
+      "sha256": "496ca8ea4f414810c8ecb3ad6fcb497978504882fafc349a9fdee9280fcdc1ec",
+      "runs": 162,
+      "release_id": "r4-guarded",
+      "release_digest": "fc18e0462672d6d6fea6074d3c30cf5c9e6d1e24cf48b16867f3a0545c477965",
+      "evaluator": "corpus-evaluator-v2",
+      "groups": 27
+    },
+    {
+      "file": "security-r1-baseline.jsonl",
+      "sha256": "41cb69ff97e131a5d89490d51549a5b1272148942de4e86d1dd87ac354a03872",
+      "runs": 63,
+      "release_id": "r1-baseline",
+      "release_digest": "b8f12b68cab5868d47d89738790ec54a99fd0fb0cf61768a910748683ecafea6",
+      "evaluator": "corpus-evaluator-v2",
+      "groups": 7
+    },
+    {
+      "file": "security-r2-hardened.jsonl",
+      "sha256": "7d070ad7d69b8446e7ff8d4dc7784cf933f98755ddb706d29c631c8d51f8a7da",
+      "runs": 63,
+      "release_id": "r2-hardened",
+      "release_digest": "453f1c0f2bc240c43758f9adfd085ece50f4614cd7cb066397a88ed323d27302",
+      "evaluator": "corpus-evaluator-v2",
+      "groups": 7
+    },
+    {
+      "file": "security-r3-degraded.jsonl",
+      "sha256": "655ccb90af17b5c42c37ad3c45d7f6aec308b177d6a54190faec97fa1db91061",
+      "runs": 63,
+      "release_id": "r3-degraded",
+      "release_digest": "eff409dc2284e6d12d49dc04e6a1e8527448036f29d9c24a1ffc865673633404",
+      "evaluator": "corpus-evaluator-v2",
+      "groups": 7
+    },
+    {
+      "file": "security-r4-guarded.jsonl",
+      "sha256": "94f0c3eea68a03c71f88eb3823263be2c71071026a1ec5967653c0ca5d9fc82e",
+      "runs": 63,
+      "release_id": "r4-guarded",
+      "release_digest": "fc18e0462672d6d6fea6074d3c30cf5c9e6d1e24cf48b16867f3a0545c477965",
+      "evaluator": "corpus-evaluator-v2",
+      "groups": 7
+    }
+  ]
+}
