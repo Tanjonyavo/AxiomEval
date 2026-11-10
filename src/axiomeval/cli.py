@@ -25,7 +25,12 @@ def main(argv: list[str] | None = None) -> int:
     demo.add_argument("--config", type=Path, default=Path("configs/default.yaml"))
     demo.add_argument("--case", choices=CASES, default="safe")
     demo.add_argument("--output", type=Path, default=Path("reports/generated"))
+    agent = commands.add_parser("run-agent", help="Run a real local agent on frozen tasks (lot P02)")
+    agent.add_argument("--config", type=Path, default=Path("configs/agent.yaml"))
+    agent.add_argument("--output", type=Path, default=Path("reports/generated"))
     args = parser.parse_args(argv)
+    if args.command == "run-agent":
+        return _run_agent(args)
     try:
         config = load_config(args.config)
         configure_logging(config.log_level)
@@ -37,6 +42,27 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps({"case": result.case, "verdict": result.decision.verdict,
                           "synthetic": True, "json": str(json_path), "html": str(html_path)}))
         return EXIT_CODES[result.decision.verdict]
+    except AxiomEvalError as exc:
+        print(f"AxiomEval: {exc}", file=sys.stderr)
+        return 2
+    except OSError:
+        print("AxiomEval: unable to write report files", file=sys.stderr)
+        return 2
+
+
+def _run_agent(args) -> int:
+    from axiomeval.agent_config import load_agent_config
+    from axiomeval.agent_run import run_tasks
+    from axiomeval.reporting.agent_reports import write_agent_reports
+    try:
+        config = load_agent_config(args.config)
+        configure_logging(config.log_level)
+        result = run_tasks(config)
+        json_path, html_path = write_agent_reports(config, result, args.output)
+        print(json.dumps({"verdict": result.overall, "runs": len(result.records),
+                          "synthetic": result.provenance.get("synthetic", False),
+                          "json": str(json_path), "html": str(html_path)}))
+        return EXIT_CODES[result.overall]
     except AxiomEvalError as exc:
         print(f"AxiomEval: {exc}", file=sys.stderr)
         return 2

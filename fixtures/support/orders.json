@@ -1,0 +1,5 @@
+{
+  "A1001": {"commande": "A1001", "statut": "livrée", "date": "2026-10-28"},
+  "A1002": {"commande": "A1002", "statut": "expédiée", "transporteur": "Postes Canada", "livraison_prevue": "2026-11-14"},
+  "A1003": {"commande": "A1003", "statut": "en préparation"}
+}
