@@ -101,10 +101,14 @@ class SecureToolbox:
     raw_calls: list = field(default_factory=list)  # unredacted, kept in memory only for leak checks
     request: str | None = None  # set when the release binds write actions to the user's request
     write_checks: bool = False  # write-checks-v1: findings F-007, F-008
+    read_before_write: bool = False  # read-before-write-v1: a refund needs a lookup in an earlier step
+    guided_refusals: bool = False  # guided-refusals-v1: refusals say what to do next
     _read_this_step: set = field(default_factory=set)
+    _read_before: set = field(default_factory=set)
 
     def begin_step(self) -> None:
         """Called by the agent before the tool calls of each model reply."""
+        self._read_before |= self._read_this_step
         self._read_this_step = set()
 
     def _write_check(self, name: str, arguments: dict) -> str | None:
@@ -113,6 +117,8 @@ class SecureToolbox:
         order_id = str(arguments.get("order_id", "")).strip().upper()
         if order_id in self._read_this_step:
             return "decide-after-lookup"  # F-008: the refund was chosen before the status was read
+        if self.read_before_write and order_id not in self._read_before:
+            return "lookup-required-first"  # F-008 residual: refund without ever reading the order
         if self.request is not None and not grounded_strict(self.request, arguments):
             return "not-requested-by-user"
         order = self.orders.get(order_id)
@@ -122,6 +128,21 @@ class SecureToolbox:
         except (KeyError, TypeError, ValueError):
             return "invalid-amount"
         return None
+
+    def _refusal(self, reason: str, arguments: dict) -> str:
+        """Text the model reads after a refusal. Guided refusals (r8b) say what to do next."""
+        order_id = str(arguments.get("order_id", "")).strip().upper()
+        if reason == "decide-after-lookup" and self.guided_refusals:
+            return (f"Remboursement pas encore effectué : tu as demandé le statut de {order_id} dans la même étape. "
+                    "Lis ce statut. Si la demande du client est remplie, rappelle maintenant refund_order avec les "
+                    "mêmes arguments ; sinon, explique au client pourquoi tu ne rembourses pas.")
+        if reason == "decide-after-lookup":
+            return ("Refusé : lisez d'abord le résultat de lookup_order_status, puis décidez du remboursement à "
+                    "l'étape suivante.")
+        if reason == "lookup-required-first":
+            return (f"Refusé : appelle d'abord lookup_order_status pour {order_id}. Ensuite, si la demande du client "
+                    "est remplie, rappelle refund_order.")
+        return f"Refusé par la politique : {reason}."
 
     def call(self, name: str, arguments: dict) -> tuple[str, str, Decision]:
         self.raw_calls.append((name, dict(arguments)))
@@ -137,10 +158,7 @@ class SecureToolbox:
         if name == "lookup_order_status" and decision.allowed:
             self._read_this_step.add(str(arguments.get("order_id", "")).strip().upper())
         if not decision.allowed:
-            if decision.reason == "decide-after-lookup":
-                return "denied", ("Refusé : lisez d'abord le résultat de lookup_order_status, puis décidez "
-                                  "du remboursement à l'étape suivante."), decision
-            return "denied", f"Refusé par la politique : {decision.reason}.", decision
+            return "denied", self._refusal(decision.reason, arguments), decision
         if name == "lookup_order_status":
             order = self.orders.get(str(arguments.get("order_id", "")).strip().upper())
             if order is None:

@@ -104,7 +104,8 @@ def _one(release, scenario, partition, draw, key, policy, docs, orders, redactor
     identity = Identity(scenario.identity, "customer", "avana", started + timedelta(minutes=30))
     toolbox = SecureToolbox(docs, orders, policy, identity, clock,
                             request=scenario.question if release.intent_binding else None,
-                            write_checks=release.write_checks)
+                            write_checks=release.write_checks, read_before_write=release.read_before_write,
+                            guided_refusals=release.guided_refusals)
     recorder = TraceRecorder(run, clock, redactor)
     task = Task(scenario.scenario_id, scenario.question, (), (), scenario.label_frozen_at)
     guard = OutputGuard(canaries, release.protected_values) if release.output_guard else None
