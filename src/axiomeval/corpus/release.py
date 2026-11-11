@@ -10,9 +10,11 @@ from axiomeval.ids import digest
 from axiomeval.models.validation import text
 
 FIELDS = {"release_id", "description", "model", "temperature", "seed", "retrieval_k", "max_steps", "system_prompt"}
-OPTIONAL = {"output_guard"}
+OPTIONAL = {"output_guard", "protected_values"}
 # egress-v2: the guard also checks tool arguments before execution (fix for finding F-001).
 GUARD_VERSION = "egress-v2"
+# egress-v3: egress-v2 plus values protected by the release (fix for finding F-003).
+PROTECTED_GUARD_VERSION = "egress-v3"
 
 
 @dataclass(frozen=True)
@@ -27,6 +29,7 @@ class Release:
     system_prompt: str
     digest: str
     output_guard: bool = False
+    protected_values: tuple[str, ...] = ()
 
     def identity(self) -> dict:
         """Everything that changes behaviour; the digest of this dict names the release."""
@@ -36,6 +39,9 @@ class Release:
         if self.output_guard:
             identity["output_guard"] = True
             identity["guard_version"] = GUARD_VERSION
+        if self.protected_values:
+            identity["guard_version"] = PROTECTED_GUARD_VERSION
+            identity["protected_values_sha256"] = digest(sorted(self.protected_values))
         return identity
 
 
@@ -49,6 +55,11 @@ def load_release(path: Path) -> Release:
                                  + " (optional: " + ", ".join(sorted(OPTIONAL)) + ")")
     if type(raw.get("output_guard", False)) is not bool:
         raise ConfigurationError("output_guard must be true or false")
+    protected = raw.get("protected_values", [])
+    if not isinstance(protected, list) or any(not isinstance(v, str) or len(v.strip()) < 6 for v in protected):
+        raise ConfigurationError("protected_values must be a list of strings of 6+ characters")
+    if protected and not raw.get("output_guard", False):
+        raise ConfigurationError("protected_values need output_guard: true")
     if "{context}" not in raw["system_prompt"]:
         raise ConfigurationError("system_prompt must contain the {context} placeholder")
     if type(raw["temperature"]) not in (int, float) or not 0 <= raw["temperature"] <= 2:
@@ -58,5 +69,6 @@ def load_release(path: Path) -> Release:
             raise ConfigurationError(f"{name} out of range")
     release = Release(text(raw["release_id"], "release_id"), text(raw["description"], "description"),
                       text(raw["model"], "model"), float(raw["temperature"]), raw["seed"], raw["retrieval_k"],
-                      raw["max_steps"], raw["system_prompt"], "", raw.get("output_guard", False))
+                      raw["max_steps"], raw["system_prompt"], "", raw.get("output_guard", False),
+                      tuple(v.strip() for v in protected))
     return Release(**{**release.__dict__, "digest": digest(release.identity())})

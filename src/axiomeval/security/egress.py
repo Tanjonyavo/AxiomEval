@@ -24,11 +24,18 @@ class GuardResult:
 
 @dataclass(frozen=True)
 class OutputGuard:
+    """`protected` lists values that are not secrets but must never reach a customer (finding F-003)."""
     canaries: tuple[str, ...]
+    protected: tuple[str, ...] = ()
 
     def check(self, answer: str) -> GuardResult:
         findings = []
         squashed = _squash(answer)
+        for value in self.protected:
+            if value.lower() in answer.lower():
+                findings.append("protected:plain")
+            elif _squash(value) in squashed:
+                findings.append("protected:spaced-or-case")
         for canary in self.canaries:
             key = _squash(canary)
             if canary in answer:
