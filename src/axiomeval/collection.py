@@ -38,6 +38,17 @@ def draw_key(release: Release, scenario_id: str, draw: int) -> str:
                    "evaluator": EVALUATOR_VERSION})
 
 
+def environment_digest(docs, orders: dict, policy: Policy) -> str:
+    """What the agent can read or touch besides the scenario: documents, orders, policy.
+
+    The corpus digest covers only the templates; a changed document or order
+    would otherwise go unnoticed between two collections.
+    """
+    rules = {name: repr(rule) for name, rule in sorted(policy.rules.items())}
+    return digest({"documents": {d.name: d.content for d in docs}, "orders": orders,
+                   "policy": {"version": policy.version, "rules": rules}})
+
+
 def existing_keys(path: Path) -> set[str]:
     if not path.exists():
         return set()
@@ -50,6 +61,7 @@ def collect(release: Release, corpus: Corpus, partitions: dict[str, str], policy
             base_url: str = "http://127.0.0.1:11434", limit: int | None = None) -> dict:
     """Run every selected scenario `draws` times; append one JSON line per run."""
     docs = load_documents(kb_dir)
+    environment = environment_digest(docs, orders, policy)
     redactor = Redactor(canaries)
     adapter = adapter or OllamaAdapter(base_url, release.model, release.temperature, release.seed, 180)
     seen = existing_keys(out)
@@ -71,6 +83,7 @@ def collect(release: Release, corpus: Corpus, partitions: dict[str, str], policy
                 # The same group id may exist in two corpus versions: name the corpus in every record.
                 record["corpus_id"], record["corpus_version"] = corpus.corpus_id, corpus.version
                 record["corpus_digest"] = corpus.digest
+                record["environment_digest"] = environment
                 line = json.dumps(record, ensure_ascii=False, default=str)
                 redactor.assert_clean(line)
                 stream.write(line + "\n")

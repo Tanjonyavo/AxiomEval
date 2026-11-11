@@ -8,7 +8,7 @@ from pathlib import Path
 
 from axiomeval.collect.adapters import ScriptedAdapter
 from axiomeval.collect.knowledge import load_documents
-from axiomeval.collection import collect, load_records
+from axiomeval.collection import collect, environment_digest, load_records
 from axiomeval.corpus.release import load_release
 from axiomeval.corpus.scenarios import load_corpus, retrieval_profile
 from axiomeval.corpus.splits import assign, load_frozen
@@ -107,6 +107,11 @@ class CorpusProvenanceTests(unittest.TestCase):
                     out, adapter=ScriptedAdapter(spath), clock=clock)
             record = load_records(out)[0]
         self.assertEqual((record["corpus_version"], record["corpus_digest"]), ("2.0.0", CORPUS.digest))
+        docs = load_documents(BASE / "kb")
+        policy = load_policy(BASE / "policy.json")
+        self.assertEqual(record["environment_digest"], environment_digest(docs, ORDERS, policy))
+        changed = dict(ORDERS, A1001=dict(ORDERS["A1001"], statut="annulée"))
+        self.assertNotEqual(environment_digest(docs, changed, policy), record["environment_digest"])
         self.assertEqual(record["business"], "SUCCESS")
 
     def test_verdict_refuses_mixed_corpus_versions(self):
@@ -119,6 +124,10 @@ class CorpusProvenanceTests(unittest.TestCase):
         result = release_verdict(base, cand, Protocol())
         self.assertEqual(result.verdict, Verdict.INCOMPLETE)
         self.assertIn("different-corpus-versions", result.reasons)
+        for r in cand:
+            r["corpus_digest"], r["environment_digest"] = "v1", "kb-changed"
+        result = release_verdict(base, cand, Protocol())
+        self.assertEqual(result.reasons, ("different-environments",))
 
 
 if __name__ == "__main__":
