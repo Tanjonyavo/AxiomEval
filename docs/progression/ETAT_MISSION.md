@@ -45,13 +45,21 @@ S9 sur v2 : `ml-baselines --runs data/runs/v2/*.jsonl --out reports/s09/v2_basel
 - **Retest réel terminé** (`data/runs/v2-env/`, `reports/s05/v2env_compare_r4-guarded_r5-protected.json`) : r5 bloque les 5 fuites de r4 ; verdict r4 → r5 REJECT à cause de F-004 seulement.
 - **S9 refaite** avec `prefix-features-v2` (`reports/s09/v2_baselines_features_v2.json`, `docs/experiments/S09_BASELINES_V2.md`) : conclusions maintenues ; la logistique a un Brier égal à la majorité (et non pire) sur familles inconnues.
 - **F-004/F-005 corrigés** (`9923985`, release `r6-bound`) : 0 brèche sur 1 080 exécutions réelles ; verdict r5 → r6 HOLD, premier verdict non-REJECT sur v2.
-- **S10 bloquée, avec mesure** : sur 4 320 trajectoires réelles, 797 sur 1 080 par release font un seul appel au modèle (4 événements), les autres deux appels (8 événements). Un GRU sur des séquences aussi courtes et figées ne mesurerait rien d'utile. Pour débloquer S10, il faut des tâches à plusieurs étapes (consulter puis rembourser, chercher puis répondre) : corpus v3 ou nouvelles familles. PyTorch 2.14.1+cpu est installé dans `.venv`, mais n'est pas déclaré dans `pyproject.toml`.
+- **S10 bloquée sur v2, avec mesure** : sur 4 320 trajectoires réelles, 797 sur 1 080 par release font un seul appel au modèle (4 événements), les autres deux appels (8 événements). D'où le corpus v3 (`0f8a098`) : v2 + 9 familles multi-étapes (65 groupes), 245 groupes au total.
+- **Code S10 validé par les tests** (`9f3aa96`) : `src/axiomeval/ml/sequence.py`, commande `ml-sequence`, extra `seq` (torch). Un essai de fumée sur v2 r1 + r4 (1 tirage de graines, 50 bootstraps) a seulement vérifié que la chaîne tourne ; ce n'est pas un résultat.
+- **Collecte v3 en cours** : `data/runs/v3/r1-baseline.jsonl` puis `r6-bound.jsonl`, 1 470 exécutions chacune. La collecte reprend où elle s'est arrêtée (clés de tirage) ; relancer la même commande :
+
+```bash
+for r in r1-baseline r6-bound; do .venv/Scripts/python.exe -m axiomeval collect --corpus-dir fixtures/corpus-v3 --release configs/releases/$r.yaml --out data/runs/v3/$r.jsonl --draws 2 || exit 1; done
+```
+
+  Ensuite : `tools/data/manifest.py data/runs/v3 data/MANIFEST_V3.json`, `tools/data/trajectories.py data/runs/v3/*.jsonl --multi <familles v3> --out reports/s10/v3_lengths.json`, `compare` r1 → r6, puis `ml-sequence --runs data/runs/v3/*.jsonl --out reports/s10/v3_sequence.json`.
 
 ## Prochaines actions, dans l'ordre
 
 1. Revue humaine des 119 tentatives bloquées de r6 (condition du HOLD), puis plus de groupes pour démontrer la non-infériorité (~520).
 2. Calibration (S15 partielle) et conservation des prédictions pour un bootstrap apparié des différences entre modèles.
-3. Familles multi-étapes pour débloquer S10, puis GRU (S10), Transformer compact et ablations (S11–S12), gate G12.
+3. Finir la collecte v3, mesurer les longueurs, lancer S10 (GRU contre agrégat, ablations), puis Transformer compact (S11–S12) et gate G12.
 4. Transfert (§9) vers un second agent ou domaine ; non commencé.
 5. S13–S24 selon `docs/audit/AUDIT_INITIAL_S24.md`.
 6. Manuels pédagogiques : corpus v2, caviardage des variantes, évaluation par familles, valeurs protégées, liaison à la demande.
