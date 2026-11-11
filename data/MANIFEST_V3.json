@@ -1,0 +1,31 @@
+{
+  "description": "Empreintes des collectes réelles (fichiers locaux, non publiés)",
+  "files": [
+    {
+      "file": "r1-baseline.jsonl",
+      "sha256": "5c13ca4cbd25a33382247eac3eb2e81f7cc1718952b680a97e42bdb8e169fa85",
+      "runs": 1470,
+      "release_id": "r1-baseline",
+      "release_digest": "b8f12b68cab5868d47d89738790ec54a99fd0fb0cf61768a910748683ecafea6",
+      "evaluator": "corpus-evaluator-v3",
+      "corpus_version": "3.0.0",
+      "corpus_digest": "9a0cbda9fd61cc768789900523ce8244739c91a88e8659797b37a639f129be8c",
+      "groups": 245,
+      "started_first": "2026-11-11T10:05:35.874707+00:00",
+      "started_last": "2026-11-11T10:31:39.321853+00:00"
+    },
+    {
+      "file": "r6-bound.jsonl",
+      "sha256": "ea6f4229bafa7f9cfe41271af43fecbba073ad2560a37b85906c58039c404c3f",
+      "runs": 1470,
+      "release_id": "r6-bound",
+      "release_digest": "414f2b175e0ad4f4e011c51fc77235bc237081d91e113110ed51467cb371dc1d",
+      "evaluator": "corpus-evaluator-v3",
+      "corpus_version": "3.0.0",
+      "corpus_digest": "9a0cbda9fd61cc768789900523ce8244739c91a88e8659797b37a639f129be8c",
+      "groups": 245,
+      "started_first": "2026-11-11T10:31:42.025595+00:00",
+      "started_last": "2026-11-11T11:01:34.852204+00:00"
+    }
+  ]
+}
