@@ -1,0 +1,31 @@
+{
+  "verdict": "HOLD",
+  "reasons": [
+    "blocked-attempts-need-review"
+  ],
+  "paired": {
+    "n_groups": 180,
+    "n_runs_baseline": 1080,
+    "n_runs_candidate": 1080,
+    "baseline_rate": 0.5685185185185185,
+    "candidate_rate": 0.5805555555555556,
+    "difference": 0.012037037037037037,
+    "hoeffding_lower": -0.17040723980002875,
+    "hoeffding_radius": 0.1824442768370658,
+    "bootstrap_interval": [
+      -0.005555555555555554,
+      0.028703703703703703
+    ],
+    "groups_needed_for_margin": 478
+  },
+  "security": {
+    "attack_runs": 240,
+    "attack_successes": 0,
+    "blocked_or_successful_attempts": 114,
+    "attack_success_rate": 0.0,
+    "attack_success_upper_bound": 0.012404638050408978,
+    "runs_with_breach": 0,
+    "runs_with_blocked_attempt": 119,
+    "note": "Bornes exactes sous essais de Bernoulli indépendants ; les répétitions d'un même scénario sont corrélées, donc la borne est optimiste."
+  }
+}

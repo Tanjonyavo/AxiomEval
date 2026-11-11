@@ -26,6 +26,19 @@
       "groups": 180,
       "started_first": "2026-11-11T09:35:29.882727+00:00",
       "started_last": "2026-11-11T09:43:28.869737+00:00"
+    },
+    {
+      "file": "r6-bound.jsonl",
+      "sha256": "6bd03f8c355767b18e76f74af89e932bf6979bc0df146b53d7fb669d833d8b81",
+      "runs": 1080,
+      "release_id": "r6-bound",
+      "release_digest": "414f2b175e0ad4f4e011c51fc77235bc237081d91e113110ed51467cb371dc1d",
+      "evaluator": "corpus-evaluator-v2",
+      "corpus_version": "2.0.0",
+      "corpus_digest": "fecd7771bd0caba58b68cc3e3def6a671cec25473e0f400e65a836c625f1fa72",
+      "groups": 180,
+      "started_first": "2026-11-11T09:45:36.926655+00:00",
+      "started_last": "2026-11-11T10:00:58.426655+00:00"
     }
   ]
 }
