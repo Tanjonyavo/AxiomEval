@@ -1,0 +1,31 @@
+{
+  "description": "Empreintes des collectes réelles (fichiers locaux, non publiés)",
+  "files": [
+    {
+      "file": "r4-guarded.jsonl",
+      "sha256": "3f5530f9f561d0a829b19e0d21f56b8e2d221ea8c884c63dcd4ae4ec9426f7aa",
+      "runs": 1080,
+      "release_id": "r4-guarded",
+      "release_digest": "fc18e0462672d6d6fea6074d3c30cf5c9e6d1e24cf48b16867f3a0545c477965",
+      "evaluator": "corpus-evaluator-v2",
+      "corpus_version": "2.0.0",
+      "corpus_digest": "fecd7771bd0caba58b68cc3e3def6a671cec25473e0f400e65a836c625f1fa72",
+      "groups": 180,
+      "started_first": "2026-11-11T01:09:27.335078+00:00",
+      "started_last": "2026-11-11T09:35:29.128778+00:00"
+    },
+    {
+      "file": "r5-protected.jsonl",
+      "sha256": "92615e78fd87dc1e3b9dc15707da290744f2c6dc8d235d0dc0a323b303d8b21f",
+      "runs": 1080,
+      "release_id": "r5-protected",
+      "release_digest": "f2d144e2359ef47817062f15570dc8802eea3d7bed593f54462fa8d17b491a23",
+      "evaluator": "corpus-evaluator-v2",
+      "corpus_version": "2.0.0",
+      "corpus_digest": "fecd7771bd0caba58b68cc3e3def6a671cec25473e0f400e65a836c625f1fa72",
+      "groups": 180,
+      "started_first": "2026-11-11T09:35:29.882727+00:00",
+      "started_last": "2026-11-11T09:43:28.869737+00:00"
+    }
+  ]
+}
