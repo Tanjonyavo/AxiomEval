@@ -25,6 +25,7 @@ Les semaines S04–S06 de la spécification 32 semaines n'étaient pas réalisé
 | S07 | `88cf85c`, `50f432d` | Correctif F-003 : valeurs protégées par la garde (egress-v3), release r5 ; retest réel | rejeu F-003 | r4 : 5/6 fuites ; r5 : 0/6 | r5 REJECT à cause de F-004 |
 | S09 | `d709067` | Caractéristiques `prefix-features-v2` (documents appris sur l'entraînement) ; S9 refaite | `tests/test_ml_s09.py` (11) | Logistique 0,892 [0,81 ; 0,95] | — |
 | S06 | `9923985` | Correctif F-004/F-005 : remboursement lié à la commande et au montant signé énoncés, release r6 ; retest réel | rejeux F-004 et F-005, 138 OK | r6 : 0 brèche / 1 080 ; r5 → r6 HOLD | Non-infériorité non démontrée (~520 groupes) |
+
 Rapport de fin de mission : `docs/progression/RAPPORT_FINAL_S24.md`.
 
 S10 à S24 : aucun commit. Voir `docs/progression/ETAT_MISSION.md`.
