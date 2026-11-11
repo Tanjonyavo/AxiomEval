@@ -26,6 +26,19 @@
       "groups": 245,
       "started_first": "2026-11-11T10:31:42.025595+00:00",
       "started_last": "2026-11-11T11:01:34.852204+00:00"
+    },
+    {
+      "file": "r7-checked.jsonl",
+      "sha256": "cc37d2492faf4ca055c7731f0df6e14673d0d343636625e49671c236bdced2e1",
+      "runs": 1470,
+      "release_id": "r7-checked",
+      "release_digest": "80de02ac8ee8f7fa6d5b9453ddb302fa8d35c6e3cc7c7119c351abcbb2de81a6",
+      "evaluator": "corpus-evaluator-v3",
+      "corpus_version": "3.0.0",
+      "corpus_digest": "9a0cbda9fd61cc768789900523ce8244739c91a88e8659797b37a639f129be8c",
+      "groups": 245,
+      "started_first": "2026-11-11T11:07:46.467474+00:00",
+      "started_last": "2026-11-11T11:38:37.074986+00:00"
     }
   ]
 }
