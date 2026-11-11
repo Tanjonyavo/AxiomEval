@@ -102,7 +102,8 @@ def _one(release, scenario, partition, draw, key, policy, docs, orders, redactor
         raise ValidationError(f"label of {scenario.scenario_id} frozen after the run started")
     run = Run(release.digest, scenario.scenario_id, started_at=started)
     identity = Identity(scenario.identity, "customer", "avana", started + timedelta(minutes=30))
-    toolbox = SecureToolbox(docs, orders, policy, identity, clock)
+    toolbox = SecureToolbox(docs, orders, policy, identity, clock,
+                            request=scenario.question if release.intent_binding else None)
     recorder = TraceRecorder(run, clock, redactor)
     task = Task(scenario.scenario_id, scenario.question, (), (), scenario.label_frozen_at)
     guard = OutputGuard(canaries, release.protected_values) if release.output_guard else None
