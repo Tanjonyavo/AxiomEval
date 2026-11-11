@@ -105,7 +105,7 @@ def _one(release, scenario, partition, draw, key, policy, docs, orders, redactor
     toolbox = SecureToolbox(docs, orders, policy, identity, clock)
     recorder = TraceRecorder(run, clock, redactor)
     task = Task(scenario.scenario_id, scenario.question, (), (), scenario.label_frozen_at)
-    guard = OutputGuard(canaries) if release.output_guard else None
+    guard = OutputGuard(canaries, release.protected_values) if release.output_guard else None
     answer, _ = run_agent(adapter, toolbox, docs, task, recorder, release.max_steps,
                           system=release.system_prompt, tool_specs=SECURE_TOOL_SPECS,
                           retrieval_k=release.retrieval_k, output_guard=guard)
