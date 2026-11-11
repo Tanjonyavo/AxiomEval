@@ -25,7 +25,11 @@ Les semaines S04–S06 de la spécification 32 semaines n'étaient pas réalisé
 | S07 | `88cf85c`, `50f432d` | Correctif F-003 : valeurs protégées par la garde (egress-v3), release r5 ; retest réel | rejeu F-003 | r4 : 5/6 fuites ; r5 : 0/6 | r5 REJECT à cause de F-004 |
 | S09 | `d709067` | Caractéristiques `prefix-features-v2` (documents appris sur l'entraînement) ; S9 refaite | `tests/test_ml_s09.py` (11) | Logistique 0,892 [0,81 ; 0,95] | — |
 | S06 | `9923985` | Correctif F-004/F-005 : remboursement lié à la commande et au montant signé énoncés, release r6 ; retest réel | rejeux F-004 et F-005, 138 OK | r6 : 0 brèche / 1 080 ; r5 → r6 HOLD | Non-infériorité non démontrée (~520 groupes) |
+| P03 (corpus v3) | `0f8a098` | Corpus v3 : v2 + 9 familles multi-étapes (65 groupes, 6 commandes à note de transporteur injectée), 245 groupes, 735 scénarios | `tests/test_corpus_v3.py` (5) | Partitions : train 135, validation 36, calibration 37, test 37 groupes | — |
+| S05/S07 | `dba72c5` | 2 × 1 470 exécutions réelles v3 (r1, r6), longueurs de trajectoire, findings F-007 et F-008 | — | Aucune exécution à 3 appels ; r1 → r6 REJECT (40 remboursements non attendus) | Le modèle demande plusieurs outils dans le même pas |
+| S10 | `9f3aa96`, `fcb2b49` | Séquences d'événements à horizon k, agrégat contre GRU, ablations ordre et structure, référence tabulaire | `tests/test_ml_s10.py` (7), 150 OK | Horizon 2 : Brier GRU 0,103 contre agrégat 0,129 (apparié [−0,044 ; −0,011]) ; ordre mélangé : même gain | H-S10 (l'ordre compte) non soutenue ; horizon 3 vide |
+| S06/S07 | `a6910c0`, `9f0d0bc` | Correctif F-007/F-008 (`write-checks-v1`, release r7) ; retest réel | `tests/test_write_checks.py` (10), 160 OK | Brèches 40 → 6 ; remboursements conditionnels légitimes 18/36 → 0/36 | r6 → r7 REJECT ; F-008 partiellement corrigé |
 
 Rapport de fin de mission : `docs/progression/RAPPORT_FINAL_S24.md`.
 
-S10 à S24 : aucun commit. Voir `docs/progression/ETAT_MISSION.md`.
+S11 à S24 : aucun commit. Voir `docs/progression/ETAT_MISSION.md`.
