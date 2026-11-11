@@ -1,0 +1,1566 @@
+{
+ "r1-baseline.jsonl": {
+  "all": {
+   "runs": 1470,
+   "mean_events": 5.66,
+   "mean_model_calls": 1.35,
+   "model_calls": {
+    "0": 1,
+    "1": 947,
+    "2": 522
+   },
+   "share_two_or_more_calls": 0.355,
+   "share_three_or_more_calls": 0.0
+  },
+  "multi_step": {
+   "runs": 390,
+   "mean_events": 7.4,
+   "mean_model_calls": 1.62,
+   "model_calls": {
+    "1": 147,
+    "2": 243
+   },
+   "share_two_or_more_calls": 0.623,
+   "share_three_or_more_calls": 0.0
+  },
+  "other": {
+   "runs": 1080,
+   "mean_events": 5.03,
+   "mean_model_calls": 1.26,
+   "model_calls": {
+    "0": 1,
+    "1": 800,
+    "2": 279
+   },
+   "share_two_or_more_calls": 0.258,
+   "share_three_or_more_calls": 0.0
+  },
+  "by_family": {
+   "approbation_pretendue": {
+    "runs": 30,
+    "mean_events": 5.33,
+    "mean_model_calls": 1.33,
+    "model_calls": {
+     "1": 20,
+     "2": 10
+    },
+    "share_two_or_more_calls": 0.333,
+    "share_three_or_more_calls": 0.0
+   },
+   "carte_cadeau_expiration": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "carte_cadeau_montant": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "carte_cadeau_remboursement": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "carte_paiement": {
+    "runs": 18,
+    "mean_events": 5.33,
+    "mean_model_calls": 1.33,
+    "model_calls": {
+     "1": 12,
+     "2": 6
+    },
+    "share_two_or_more_calls": 0.333,
+    "share_three_or_more_calls": 0.0
+   },
+   "commande_autre_client": {
+    "runs": 36,
+    "mean_events": 6.67,
+    "mean_model_calls": 1.67,
+    "model_calls": {
+     "1": 12,
+     "2": 24
+    },
+    "share_two_or_more_calls": 0.667,
+    "share_three_or_more_calls": 0.0
+   },
+   "commande_autre_tenant": {
+    "runs": 30,
+    "mean_events": 5.33,
+    "mean_model_calls": 1.33,
+    "model_calls": {
+     "1": 20,
+     "2": 10
+    },
+    "share_two_or_more_calls": 0.333,
+    "share_three_or_more_calls": 0.0
+   },
+   "commande_inconnue": {
+    "runs": 36,
+    "mean_events": 5.78,
+    "mean_model_calls": 1.44,
+    "model_calls": {
+     "1": 20,
+     "2": 16
+    },
+    "share_two_or_more_calls": 0.444,
+    "share_three_or_more_calls": 0.0
+   },
+   "compte_courriel": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "compte_infolettre": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "compte_mot_de_passe": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "compte_suppression": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "courriel_interne": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "echange_taille": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "escalade": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "escalade_motif": {
+    "runs": 36,
+    "mean_events": 5.33,
+    "mean_model_calls": 1.33,
+    "model_calls": {
+     "1": 24,
+     "2": 12
+    },
+    "share_two_or_more_calls": 0.333,
+    "share_three_or_more_calls": 0.0
+   },
+   "export_audit": {
+    "runs": 6,
+    "mean_events": 8.0,
+    "mean_model_calls": 2.0,
+    "model_calls": {
+     "2": 6
+    },
+    "share_two_or_more_calls": 1.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "export_courriels": {
+    "runs": 6,
+    "mean_events": 5.33,
+    "mean_model_calls": 1.33,
+    "model_calls": {
+     "1": 4,
+     "2": 2
+    },
+    "share_two_or_more_calls": 0.333,
+    "share_three_or_more_calls": 0.0
+   },
+   "export_donnees": {
+    "runs": 6,
+    "mean_events": 6.67,
+    "mean_model_calls": 1.67,
+    "model_calls": {
+     "1": 2,
+     "2": 4
+    },
+    "share_two_or_more_calls": 0.667,
+    "share_three_or_more_calls": 0.0
+   },
+   "extraction_identifiant": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "fidelite_points": {
+    "runs": 18,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 18
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "fidelite_seuil": {
+    "runs": 12,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 12
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "fidelite_valeur": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "frais_retour": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "garantie_categorie": {
+    "runs": 42,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 42
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "garantie_couverture": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "garantie_puis_escalade": {
+    "runs": 30,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 30
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "injection_directe": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "injection_format": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "injection_rag": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "injection_rag_liquidation": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "injection_resultat_outil": {
+    "runs": 36,
+    "mean_events": 6.67,
+    "mean_model_calls": 1.67,
+    "model_calls": {
+     "1": 12,
+     "2": 24
+    },
+    "share_two_or_more_calls": 0.667,
+    "share_three_or_more_calls": 0.0
+   },
+   "injection_role": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "jeton_admin": {
+    "runs": 6,
+    "mean_events": 6.67,
+    "mean_model_calls": 1.67,
+    "model_calls": {
+     "1": 2,
+     "2": 4
+    },
+    "share_two_or_more_calls": 0.667,
+    "share_three_or_more_calls": 0.0
+   },
+   "jeton_jeu_de_role": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "jeton_traduction": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "jeton_urgence": {
+    "runs": 6,
+    "mean_events": 5.33,
+    "mean_model_calls": 1.33,
+    "model_calls": {
+     "1": 4,
+     "2": 2
+    },
+    "share_two_or_more_calls": 0.333,
+    "share_three_or_more_calls": 0.0
+   },
+   "livraison_express": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "livraison_gratuite": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "livraison_province": {
+    "runs": 78,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 78
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "livraison_standard": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "livraison_zone": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "magasin_dimanche": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "magasin_fermeture": {
+    "runs": 36,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 36
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "montant_aberrant": {
+    "runs": 18,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 18
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "montant_commande": {
+    "runs": 60,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 60
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "montant_mixte_autre_client": {
+    "runs": 36,
+    "mean_events": 8.17,
+    "mean_model_calls": 1.67,
+    "model_calls": {
+     "1": 12,
+     "2": 24
+    },
+    "share_two_or_more_calls": 0.667,
+    "share_three_or_more_calls": 0.0
+   },
+   "montant_puis_decision": {
+    "runs": 60,
+    "mean_events": 9.45,
+    "mean_model_calls": 2.0,
+    "model_calls": {
+     "2": 60
+    },
+    "share_two_or_more_calls": 1.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "paiement_devise": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "paiement_facture": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "paiement_taxes": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "paiement_versements": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "remboursement_autre_client": {
+    "runs": 24,
+    "mean_events": 6.67,
+    "mean_model_calls": 1.67,
+    "model_calls": {
+     "1": 8,
+     "2": 16
+    },
+    "share_two_or_more_calls": 0.667,
+    "share_three_or_more_calls": 0.0
+   },
+   "remboursement_delai": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "remboursement_grand": {
+    "runs": 60,
+    "mean_events": 6.33,
+    "mean_model_calls": 1.58,
+    "model_calls": {
+     "1": 25,
+     "2": 35
+    },
+    "share_two_or_more_calls": 0.583,
+    "share_three_or_more_calls": 0.0
+   },
+   "remboursement_inconnu": {
+    "runs": 18,
+    "mean_events": 5.33,
+    "mean_model_calls": 1.33,
+    "model_calls": {
+     "1": 12,
+     "2": 6
+    },
+    "share_two_or_more_calls": 0.333,
+    "share_three_or_more_calls": 0.0
+   },
+   "remboursement_partiel": {
+    "runs": 30,
+    "mean_events": 4.27,
+    "mean_model_calls": 1.07,
+    "model_calls": {
+     "1": 28,
+     "2": 2
+    },
+    "share_two_or_more_calls": 0.067,
+    "share_three_or_more_calls": 0.0
+   },
+   "remboursement_petit": {
+    "runs": 72,
+    "mean_events": 6.67,
+    "mean_model_calls": 1.67,
+    "model_calls": {
+     "1": 24,
+     "2": 48
+    },
+    "share_two_or_more_calls": 0.667,
+    "share_three_or_more_calls": 0.0
+   },
+   "rembourser_deux": {
+    "runs": 36,
+    "mean_events": 8.86,
+    "mean_model_calls": 1.69,
+    "model_calls": {
+     "1": 11,
+     "2": 25
+    },
+    "share_two_or_more_calls": 0.694,
+    "share_three_or_more_calls": 0.0
+   },
+   "rembourser_et_delai": {
+    "runs": 36,
+    "mean_events": 6.67,
+    "mean_model_calls": 1.67,
+    "model_calls": {
+     "1": 12,
+     "2": 24
+    },
+    "share_two_or_more_calls": 0.667,
+    "share_three_or_more_calls": 0.0
+   },
+   "retour_delai": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "retour_ecouteurs": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "retour_personnalise": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "retour_solde": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "service_clavardage": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "service_horaires": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "service_telephone": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "statut_commande": {
+    "runs": 120,
+    "mean_events": 6.53,
+    "mean_model_calls": 1.63,
+    "model_calls": {
+     "1": 44,
+     "2": 76
+    },
+    "share_two_or_more_calls": 0.633,
+    "share_three_or_more_calls": 0.0
+   },
+   "statut_double": {
+    "runs": 48,
+    "mean_events": 7.19,
+    "mean_model_calls": 1.62,
+    "model_calls": {
+     "1": 18,
+     "2": 30
+    },
+    "share_two_or_more_calls": 0.625,
+    "share_three_or_more_calls": 0.0
+   },
+   "transporteur_commande": {
+    "runs": 48,
+    "mean_events": 3.98,
+    "mean_model_calls": 0.98,
+    "model_calls": {
+     "0": 1,
+     "1": 47
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "transporteur_et_delai": {
+    "runs": 48,
+    "mean_events": 5.4,
+    "mean_model_calls": 1.33,
+    "model_calls": {
+     "1": 32,
+     "2": 16
+    },
+    "share_two_or_more_calls": 0.333,
+    "share_three_or_more_calls": 0.0
+   },
+   "verifier_puis_rembourser": {
+    "runs": 60,
+    "mean_events": 8.37,
+    "mean_model_calls": 1.67,
+    "model_calls": {
+     "1": 20,
+     "2": 40
+    },
+    "share_two_or_more_calls": 0.667,
+    "share_three_or_more_calls": 0.0
+   }
+  }
+ },
+ "r6-bound.jsonl": {
+  "all": {
+   "runs": 1470,
+   "mean_events": 5.93,
+   "mean_model_calls": 1.41,
+   "model_calls": {
+    "1": 860,
+    "2": 610
+   },
+   "share_two_or_more_calls": 0.415,
+   "share_three_or_more_calls": 0.0
+  },
+  "multi_step": {
+   "runs": 390,
+   "mean_events": 7.93,
+   "mean_model_calls": 1.75,
+   "model_calls": {
+    "1": 99,
+    "2": 291
+   },
+   "share_two_or_more_calls": 0.746,
+   "share_three_or_more_calls": 0.0
+  },
+  "other": {
+   "runs": 1080,
+   "mean_events": 5.2,
+   "mean_model_calls": 1.3,
+   "model_calls": {
+    "1": 761,
+    "2": 319
+   },
+   "share_two_or_more_calls": 0.295,
+   "share_three_or_more_calls": 0.0
+  },
+  "by_family": {
+   "approbation_pretendue": {
+    "runs": 30,
+    "mean_events": 6.13,
+    "mean_model_calls": 1.53,
+    "model_calls": {
+     "1": 14,
+     "2": 16
+    },
+    "share_two_or_more_calls": 0.533,
+    "share_three_or_more_calls": 0.0
+   },
+   "carte_cadeau_expiration": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "carte_cadeau_montant": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "carte_cadeau_remboursement": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "carte_paiement": {
+    "runs": 18,
+    "mean_events": 5.33,
+    "mean_model_calls": 1.33,
+    "model_calls": {
+     "1": 12,
+     "2": 6
+    },
+    "share_two_or_more_calls": 0.333,
+    "share_three_or_more_calls": 0.0
+   },
+   "commande_autre_client": {
+    "runs": 36,
+    "mean_events": 6.67,
+    "mean_model_calls": 1.67,
+    "model_calls": {
+     "1": 12,
+     "2": 24
+    },
+    "share_two_or_more_calls": 0.667,
+    "share_three_or_more_calls": 0.0
+   },
+   "commande_autre_tenant": {
+    "runs": 30,
+    "mean_events": 6.67,
+    "mean_model_calls": 1.67,
+    "model_calls": {
+     "1": 10,
+     "2": 20
+    },
+    "share_two_or_more_calls": 0.667,
+    "share_three_or_more_calls": 0.0
+   },
+   "commande_inconnue": {
+    "runs": 36,
+    "mean_events": 7.11,
+    "mean_model_calls": 1.78,
+    "model_calls": {
+     "1": 8,
+     "2": 28
+    },
+    "share_two_or_more_calls": 0.778,
+    "share_three_or_more_calls": 0.0
+   },
+   "compte_courriel": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "compte_infolettre": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "compte_mot_de_passe": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "compte_suppression": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "courriel_interne": {
+    "runs": 6,
+    "mean_events": 4.83,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "echange_taille": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "escalade": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "escalade_motif": {
+    "runs": 36,
+    "mean_events": 4.22,
+    "mean_model_calls": 1.06,
+    "model_calls": {
+     "1": 34,
+     "2": 2
+    },
+    "share_two_or_more_calls": 0.056,
+    "share_three_or_more_calls": 0.0
+   },
+   "export_audit": {
+    "runs": 6,
+    "mean_events": 8.0,
+    "mean_model_calls": 2.0,
+    "model_calls": {
+     "2": 6
+    },
+    "share_two_or_more_calls": 1.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "export_courriels": {
+    "runs": 6,
+    "mean_events": 5.33,
+    "mean_model_calls": 1.33,
+    "model_calls": {
+     "1": 4,
+     "2": 2
+    },
+    "share_two_or_more_calls": 0.333,
+    "share_three_or_more_calls": 0.0
+   },
+   "export_donnees": {
+    "runs": 6,
+    "mean_events": 6.67,
+    "mean_model_calls": 1.67,
+    "model_calls": {
+     "1": 2,
+     "2": 4
+    },
+    "share_two_or_more_calls": 0.667,
+    "share_three_or_more_calls": 0.0
+   },
+   "extraction_identifiant": {
+    "runs": 6,
+    "mean_events": 4.67,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "fidelite_points": {
+    "runs": 18,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 18
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "fidelite_seuil": {
+    "runs": 12,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 12
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "fidelite_valeur": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "frais_retour": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "garantie_categorie": {
+    "runs": 42,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 42
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "garantie_couverture": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "garantie_puis_escalade": {
+    "runs": 30,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 30
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "injection_directe": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "injection_format": {
+    "runs": 6,
+    "mean_events": 5.0,
+    "mean_model_calls": 1.17,
+    "model_calls": {
+     "1": 5,
+     "2": 1
+    },
+    "share_two_or_more_calls": 0.167,
+    "share_three_or_more_calls": 0.0
+   },
+   "injection_rag": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "injection_rag_liquidation": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "injection_resultat_outil": {
+    "runs": 36,
+    "mean_events": 8.03,
+    "mean_model_calls": 2.0,
+    "model_calls": {
+     "2": 36
+    },
+    "share_two_or_more_calls": 1.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "injection_role": {
+    "runs": 6,
+    "mean_events": 4.33,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "jeton_admin": {
+    "runs": 6,
+    "mean_events": 4.5,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "jeton_jeu_de_role": {
+    "runs": 6,
+    "mean_events": 5.67,
+    "mean_model_calls": 1.33,
+    "model_calls": {
+     "1": 4,
+     "2": 2
+    },
+    "share_two_or_more_calls": 0.333,
+    "share_three_or_more_calls": 0.0
+   },
+   "jeton_traduction": {
+    "runs": 6,
+    "mean_events": 4.5,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "jeton_urgence": {
+    "runs": 6,
+    "mean_events": 4.5,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "livraison_express": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "livraison_gratuite": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "livraison_province": {
+    "runs": 78,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 78
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "livraison_standard": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "livraison_zone": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "magasin_dimanche": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "magasin_fermeture": {
+    "runs": 36,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 36
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "montant_aberrant": {
+    "runs": 18,
+    "mean_events": 4.44,
+    "mean_model_calls": 1.11,
+    "model_calls": {
+     "1": 16,
+     "2": 2
+    },
+    "share_two_or_more_calls": 0.111,
+    "share_three_or_more_calls": 0.0
+   },
+   "montant_commande": {
+    "runs": 60,
+    "mean_events": 6.0,
+    "mean_model_calls": 1.5,
+    "model_calls": {
+     "1": 30,
+     "2": 30
+    },
+    "share_two_or_more_calls": 0.5,
+    "share_three_or_more_calls": 0.0
+   },
+   "montant_mixte_autre_client": {
+    "runs": 36,
+    "mean_events": 9.47,
+    "mean_model_calls": 1.81,
+    "model_calls": {
+     "1": 7,
+     "2": 29
+    },
+    "share_two_or_more_calls": 0.806,
+    "share_three_or_more_calls": 0.0
+   },
+   "montant_puis_decision": {
+    "runs": 60,
+    "mean_events": 8.9,
+    "mean_model_calls": 2.0,
+    "model_calls": {
+     "2": 60
+    },
+    "share_two_or_more_calls": 1.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "paiement_devise": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "paiement_facture": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "paiement_taxes": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "paiement_versements": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "remboursement_autre_client": {
+    "runs": 24,
+    "mean_events": 6.67,
+    "mean_model_calls": 1.67,
+    "model_calls": {
+     "1": 8,
+     "2": 16
+    },
+    "share_two_or_more_calls": 0.667,
+    "share_three_or_more_calls": 0.0
+   },
+   "remboursement_delai": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "remboursement_grand": {
+    "runs": 60,
+    "mean_events": 4.33,
+    "mean_model_calls": 1.08,
+    "model_calls": {
+     "1": 55,
+     "2": 5
+    },
+    "share_two_or_more_calls": 0.083,
+    "share_three_or_more_calls": 0.0
+   },
+   "remboursement_inconnu": {
+    "runs": 18,
+    "mean_events": 5.11,
+    "mean_model_calls": 1.28,
+    "model_calls": {
+     "1": 13,
+     "2": 5
+    },
+    "share_two_or_more_calls": 0.278,
+    "share_three_or_more_calls": 0.0
+   },
+   "remboursement_partiel": {
+    "runs": 30,
+    "mean_events": 6.0,
+    "mean_model_calls": 1.5,
+    "model_calls": {
+     "1": 15,
+     "2": 15
+    },
+    "share_two_or_more_calls": 0.5,
+    "share_three_or_more_calls": 0.0
+   },
+   "remboursement_petit": {
+    "runs": 72,
+    "mean_events": 4.94,
+    "mean_model_calls": 1.24,
+    "model_calls": {
+     "1": 55,
+     "2": 17
+    },
+    "share_two_or_more_calls": 0.236,
+    "share_three_or_more_calls": 0.0
+   },
+   "rembourser_deux": {
+    "runs": 36,
+    "mean_events": 10.22,
+    "mean_model_calls": 1.89,
+    "model_calls": {
+     "1": 4,
+     "2": 32
+    },
+    "share_two_or_more_calls": 0.889,
+    "share_three_or_more_calls": 0.0
+   },
+   "rembourser_et_delai": {
+    "runs": 36,
+    "mean_events": 5.78,
+    "mean_model_calls": 1.44,
+    "model_calls": {
+     "1": 20,
+     "2": 16
+    },
+    "share_two_or_more_calls": 0.444,
+    "share_three_or_more_calls": 0.0
+   },
+   "retour_delai": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "retour_ecouteurs": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "retour_personnalise": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "retour_solde": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "service_clavardage": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "service_horaires": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "service_telephone": {
+    "runs": 6,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 6
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "statut_commande": {
+    "runs": 120,
+    "mean_events": 7.93,
+    "mean_model_calls": 1.98,
+    "model_calls": {
+     "1": 2,
+     "2": 118
+    },
+    "share_two_or_more_calls": 0.983,
+    "share_three_or_more_calls": 0.0
+   },
+   "statut_double": {
+    "runs": 48,
+    "mean_events": 8.52,
+    "mean_model_calls": 1.9,
+    "model_calls": {
+     "1": 5,
+     "2": 43
+    },
+    "share_two_or_more_calls": 0.896,
+    "share_three_or_more_calls": 0.0
+   },
+   "transporteur_commande": {
+    "runs": 48,
+    "mean_events": 4.0,
+    "mean_model_calls": 1.0,
+    "model_calls": {
+     "1": 48
+    },
+    "share_two_or_more_calls": 0.0,
+    "share_three_or_more_calls": 0.0
+   },
+   "transporteur_et_delai": {
+    "runs": 48,
+    "mean_events": 5.42,
+    "mean_model_calls": 1.35,
+    "model_calls": {
+     "1": 31,
+     "2": 17
+    },
+    "share_two_or_more_calls": 0.354,
+    "share_three_or_more_calls": 0.0
+   },
+   "verifier_puis_rembourser": {
+    "runs": 60,
+    "mean_events": 9.37,
+    "mean_model_calls": 1.97,
+    "model_calls": {
+     "1": 2,
+     "2": 58
+    },
+    "share_two_or_more_calls": 0.967,
+    "share_three_or_more_calls": 0.0
+   }
+  }
+ }
+}

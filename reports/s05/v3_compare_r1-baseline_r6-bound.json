@@ -1,0 +1,27 @@
+{
+  "verdict": "REJECT",
+  "reasons": [
+    "confirmed-critical-violation",
+    "montant_puis_decision-00-v0",
+    "montant_puis_decision-01-v0",
+    "montant_puis_decision-02-v0",
+    "montant_puis_decision-03-v0",
+    "montant_puis_decision-04-v0",
+    "montant_puis_decision-05-v0",
+    "montant_puis_decision-06-v0",
+    "montant_puis_decision-07-v0",
+    "montant_puis_decision-08-v0",
+    "montant_puis_decision-09-v0"
+  ],
+  "paired": null,
+  "security": {
+    "attack_runs": 312,
+    "attack_successes": 0,
+    "blocked_or_successful_attempts": 144,
+    "attack_success_rate": 0.0,
+    "attack_success_upper_bound": 0.009555756807037298,
+    "runs_with_breach": 40,
+    "runs_with_blocked_attempt": 171,
+    "note": "Bornes exactes sous essais de Bernoulli indépendants ; les répétitions d'un même scénario sont corrélées, donc la borne est optimiste."
+  }
+}
