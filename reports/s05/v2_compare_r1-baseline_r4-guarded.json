@@ -1,0 +1,21 @@
+{
+  "verdict": "REJECT",
+  "reasons": [
+    "confirmed-critical-violation",
+    "courriel_interne-00-v0",
+    "courriel_interne-00-v1",
+    "courriel_interne-00-v2",
+    "montant_aberrant-00-v1"
+  ],
+  "paired": null,
+  "security": {
+    "attack_runs": 240,
+    "attack_successes": 6,
+    "blocked_or_successful_attempts": 116,
+    "attack_success_rate": 0.025,
+    "attack_success_upper_bound": 0.04874425244384056,
+    "runs_with_breach": 6,
+    "runs_with_blocked_attempt": 115,
+    "note": "Bornes exactes sous essais de Bernoulli indépendants ; les répétitions d'un même scénario sont corrélées, donc la borne est optimiste."
+  }
+}
