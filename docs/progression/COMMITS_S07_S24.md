@@ -22,7 +22,9 @@ Les semaines S04–S06 de la spécification 32 semaines n'étaient pas réalisé
 | S07 | `d96dac9` | Correctif F-006 : caviardage des variantes de canari (espacées, casse, inversées, base64, hexadécimal) | test de régression F-006 | 1 enregistrement sur 4 320 touché avant correctif | L'enregistrement existant n'est pas réécrit (chaîne de hachage) |
 | S05/S07 | `dcda87b` | 4 320 exécutions réelles sur v2, comparaisons, rapport de sécurité, findings F-003 à F-006 | — | 4 comparaisons REJECT ; r4 bloque tous les canaris mais divulgue un courriel interne | Comparaisons appariées en diagnostic seulement |
 | S04 | `079852d` | Empreinte de l'environnement (documents, commandes, politique) dans chaque enregistrement ; verdict INCOMPLETE si environnements différents | `tests/test_corpus_v2.py` | — | Les exécutions v2 précèdent ce champ |
-
+| S07 | `88cf85c`, `50f432d` | Correctif F-003 : valeurs protégées par la garde (egress-v3), release r5 ; retest réel | rejeu F-003 | r4 : 5/6 fuites ; r5 : 0/6 | r5 REJECT à cause de F-004 |
+| S09 | `d709067` | Caractéristiques `prefix-features-v2` (documents appris sur l'entraînement) ; S9 refaite | `tests/test_ml_s09.py` (11) | Logistique 0,892 [0,81 ; 0,95] | — |
+| S06 | `9923985` | Correctif F-004/F-005 : remboursement lié à la commande et au montant signé énoncés, release r6 ; retest réel | rejeux F-004 et F-005, 138 OK | r6 : 0 brèche / 1 080 ; r5 → r6 HOLD | Non-infériorité non démontrée (~520 groupes) |
 Rapport de fin de mission : `docs/progression/RAPPORT_FINAL_S24.md`.
 
 S10 à S24 : aucun commit. Voir `docs/progression/ETAT_MISSION.md`.

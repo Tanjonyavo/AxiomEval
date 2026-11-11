@@ -1,6 +1,6 @@
 # État de la mission — point de reprise
 
-Mis à jour le 2026-11-11 (01:10 UTC). Branche `feat/mission-s24`. Corpus v2 et S9 refaite : commits `5ec1646` à `60f8d37`. Rien n'est poussé. Bilan : `docs/progression/RAPPORT_FINAL_S24.md`.
+Mis à jour le 2026-11-11 (10:00 UTC). Branche `feat/mission-s24`. Corpus v2 et S9 refaite : commits `5ec1646` à `60f8d37`. Rien n'est poussé. Bilan : `docs/progression/RAPPORT_FINAL_S24.md`.
 
 Régénérer les manuels : `python tools/pedagogie/build.py` puis `node tools/pedagogie/print.mjs <playwright/index.mjs>` (depuis la racine du dépôt). Pour expliquer un fichier, ajouter `docs/pedagogie/explications/<chemin avec __>.md` avec des sections `## Ldébut-Lfin`.
 
@@ -13,7 +13,7 @@ S09 (baselines) **IMPLÉMENTÉ ET TESTÉ** sur le corpus v2 (180 groupes, 4 320 
 - Python 3.14.5 dans `.venv` ; paquets ajoutés : fastapi 0.162, uvicorn 0.54, httpx 0.28, numpy 2.5, scikit-learn 1.9, scipy 1.18.
 - Ollama 0.40.16 portable dans `%LOCALAPPDATA%\Programs\Ollama` ; modèles `qwen2.5:1.5b-instruct` et `qwen2.5:0.5b-instruct`. Lancer `ollama serve` avant toute collecte.
 - RTX 3060 6 Go ; environ 15 Go de disque libre au début de la mission.
-- 131 tests passent (`python -m unittest discover -s tests`), 1 ignoré sans `AXIOMEVAL_LIVE=1`.
+- 138 tests passent (`python -m unittest discover -s tests`), 1 ignoré sans `AXIOMEVAL_LIVE=1`.
 
 ## Données réelles (locales, non publiées)
 
@@ -43,15 +43,15 @@ S9 sur v2 : `ml-baselines --runs data/runs/v2/*.jsonl --out reports/s09/v2_basel
 
 - **F-003 corrigé dans le code** (`88cf85c`) : release `configs/releases/r5-protected.yaml` = r4 + valeur protégée, même graine. Rejeu de la fuite réelle testé (r4 brèche, r5 tentative bloquée).
 - **Retest réel terminé** (`data/runs/v2-env/`, `reports/s05/v2env_compare_r4-guarded_r5-protected.json`) : r5 bloque les 5 fuites de r4 ; verdict r4 → r5 REJECT à cause de F-004 seulement.
-- **S9 à refaire** : `d709067` passe à `prefix-features-v2` (les 10 documents v2 étaient invisibles en v1). Relancer `ml-baselines` sur `data/runs/v2/*.jsonl` (~36 min), puis mettre à jour `docs/experiments/S09_BASELINES_V2.md`. Les chiffres actuels de ce document viennent de `prefix-features-v1`.
+- **S9 refaite** avec `prefix-features-v2` (`reports/s09/v2_baselines_features_v2.json`, `docs/experiments/S09_BASELINES_V2.md`) : conclusions maintenues ; la logistique a un Brier égal à la majorité (et non pire) sur familles inconnues.
+- **F-004/F-005 corrigés** (`9923985`, release `r6-bound`) : 0 brèche sur 1 080 exécutions réelles ; verdict r5 → r6 HOLD, premier verdict non-REJECT sur v2.
 - **S10 bloquée, avec mesure** : sur 4 320 trajectoires réelles, 797 sur 1 080 par release font un seul appel au modèle (4 événements), les autres deux appels (8 événements). Un GRU sur des séquences aussi courtes et figées ne mesurerait rien d'utile. Pour débloquer S10, il faut des tâches à plusieurs étapes (consulter puis rembourser, chercher puis répondre) : corpus v3 ou nouvelles familles. PyTorch 2.14.1+cpu est installé dans `.venv`, mais n'est pas déclaré dans `pyproject.toml`.
 
 ## Prochaines actions, dans l'ordre
 
-1. Corriger F-004 (confirmation quand le montant exécuté diffère du montant demandé) et F-005 (écriture sans intention exprimée), puis une release r6.
-2. Relancer S9 avec `prefix-features-v2`.
-3. Calibration (S15 partielle) et conservation des prédictions pour un bootstrap apparié des différences entre modèles.
-4. Familles multi-étapes pour débloquer S10, puis GRU (S10), Transformer compact et ablations (S11–S12), gate G12.
-5. Transfert (§9) vers un second agent ou domaine ; non commencé.
-6. S13–S24 selon `docs/audit/AUDIT_INITIAL_S24.md`.
-7. Manuels pédagogiques : corpus v2, caviardage des variantes, évaluation par familles, valeurs protégées.
+1. Revue humaine des 119 tentatives bloquées de r6 (condition du HOLD), puis plus de groupes pour démontrer la non-infériorité (~520).
+2. Calibration (S15 partielle) et conservation des prédictions pour un bootstrap apparié des différences entre modèles.
+3. Familles multi-étapes pour débloquer S10, puis GRU (S10), Transformer compact et ablations (S11–S12), gate G12.
+4. Transfert (§9) vers un second agent ou domaine ; non commencé.
+5. S13–S24 selon `docs/audit/AUDIT_INITIAL_S24.md`.
+6. Manuels pédagogiques : corpus v2, caviardage des variantes, évaluation par familles, valeurs protégées, liaison à la demande.

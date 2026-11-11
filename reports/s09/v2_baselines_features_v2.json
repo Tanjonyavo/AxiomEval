@@ -1,0 +1,877 @@
+{
+  "manifest": {
+    "hypothesis": "H-S09: prefix features predict runs that need review better than majority",
+    "feature_version": "prefix-features-v2",
+    "label": "business != SUCCESS",
+    "horizon": "after first model call",
+    "dataset_digest": "7da7d3df7cef9a95e604ba53ca73e1b8116c646e8895d4cf686acce822444293",
+    "run_files": [
+      "r1-baseline.jsonl",
+      "r2-hardened.jsonl",
+      "r3-degraded.jsonl",
+      "r4-guarded.jsonl"
+    ],
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "git_commit": "50f432dc053a66bcd9c1e5bbabab579b29523eee",
+    "python": "3.14.5",
+    "sklearn": "1.9.1",
+    "machine": "AMD64",
+    "selection": "grouped CV on train+validation groups only; test scored once per seed"
+  },
+  "frozen_split": {
+    "0": {
+      "n_train_runs": 3024,
+      "n_train_groups": 126,
+      "n_test_runs": 672,
+      "n_test_groups": 28,
+      "models": {
+        "majority": {
+          "n": 672,
+          "prevalence": 0.49851190476190477,
+          "brier": 0.25143144963746816,
+          "log_loss": 0.6960192264370477,
+          "pr_auc": 0.49851190476190477,
+          "roc_auc": 0.5,
+          "fit_and_predict_seconds": 0.006,
+          "pr_auc_ci95_groups": [
+            0.37645089285714284,
+            0.6190476190476191
+          ],
+          "brier_ci95_groups": [
+            0.24182479592274153,
+            0.2609180567803253
+          ]
+        },
+        "rule_first_step": {
+          "n": 672,
+          "prevalence": 0.49851190476190477,
+          "brier": 0.23222337216533528,
+          "log_loss": 0.6568835238439904,
+          "pr_auc": 0.5816766112489942,
+          "roc_auc": 0.6373621506709775,
+          "fit_and_predict_seconds": 0.006,
+          "pr_auc_ci95_groups": [
+            0.43024753150167905,
+            0.7414365960800497
+          ],
+          "brier_ci95_groups": [
+            0.2140228863555122,
+            0.2516841260796234
+          ]
+        },
+        "logistic_regression": {
+          "n": 672,
+          "prevalence": 0.49851190476190477,
+          "brier": 0.1451713360540274,
+          "log_loss": 0.4472411105093898,
+          "pr_auc": 0.8924743698531099,
+          "roc_auc": 0.868333407148235,
+          "fit_and_predict_seconds": 2.853,
+          "pr_auc_ci95_groups": [
+            0.8128131790349055,
+            0.9462053925989504
+          ],
+          "brier_ci95_groups": [
+            0.11340381708958394,
+            0.17856177869749779
+          ],
+          "chosen_C": 1.0
+        },
+        "gradient_boosting": {
+          "n": 672,
+          "prevalence": 0.49851190476190477,
+          "brier": 0.16783936063577182,
+          "log_loss": 0.5024917072610425,
+          "pr_auc": 0.8515529175766643,
+          "roc_auc": 0.8173169759511051,
+          "fit_and_predict_seconds": 2.612,
+          "pr_auc_ci95_groups": [
+            0.7575829246055994,
+            0.9240350471529984
+          ],
+          "brier_ci95_groups": [
+            0.12834466314301798,
+            0.2079559569221178
+          ]
+        }
+      }
+    },
+    "1": {
+      "n_train_runs": 3024,
+      "n_train_groups": 126,
+      "n_test_runs": 672,
+      "n_test_groups": 28,
+      "models": {
+        "majority": {
+          "n": 672,
+          "prevalence": 0.49851190476190477,
+          "brier": 0.25143144963746816,
+          "log_loss": 0.6960192264370477,
+          "pr_auc": 0.49851190476190477,
+          "roc_auc": 0.5,
+          "fit_and_predict_seconds": 0.006,
+          "pr_auc_ci95_groups": [
+            0.38240327380952377,
+            0.6205729166666667
+          ],
+          "brier_ci95_groups": [
+            0.24229327034954928,
+            0.26103810335219485
+          ]
+        },
+        "rule_first_step": {
+          "n": 672,
+          "prevalence": 0.49851190476190477,
+          "brier": 0.23222337216533528,
+          "log_loss": 0.6568835238439904,
+          "pr_auc": 0.5816766112489942,
+          "roc_auc": 0.6373621506709775,
+          "fit_and_predict_seconds": 0.007,
+          "pr_auc_ci95_groups": [
+            0.4305403821509508,
+            0.7366547526129171
+          ],
+          "brier_ci95_groups": [
+            0.21321927643080218,
+            0.2508812932421299
+          ]
+        },
+        "logistic_regression": {
+          "n": 672,
+          "prevalence": 0.49851190476190477,
+          "brier": 0.1451713360540274,
+          "log_loss": 0.4472411105093898,
+          "pr_auc": 0.8924743698531099,
+          "roc_auc": 0.868333407148235,
+          "fit_and_predict_seconds": 2.805,
+          "pr_auc_ci95_groups": [
+            0.8106793886816667,
+            0.9463265787716438
+          ],
+          "brier_ci95_groups": [
+            0.11226866701427497,
+            0.1793765685222491
+          ],
+          "chosen_C": 1.0
+        },
+        "gradient_boosting": {
+          "n": 672,
+          "prevalence": 0.49851190476190477,
+          "brier": 0.16783936063577182,
+          "log_loss": 0.5024917072610425,
+          "pr_auc": 0.8515529175766643,
+          "roc_auc": 0.8173169759511051,
+          "fit_and_predict_seconds": 2.665,
+          "pr_auc_ci95_groups": [
+            0.7585647561721066,
+            0.9234524274881595
+          ],
+          "brier_ci95_groups": [
+            0.13100986978849177,
+            0.20856927247590717
+          ]
+        }
+      }
+    },
+    "2": {
+      "n_train_runs": 3024,
+      "n_train_groups": 126,
+      "n_test_runs": 672,
+      "n_test_groups": 28,
+      "models": {
+        "majority": {
+          "n": 672,
+          "prevalence": 0.49851190476190477,
+          "brier": 0.25143144963746816,
+          "log_loss": 0.6960192264370477,
+          "pr_auc": 0.49851190476190477,
+          "roc_auc": 0.5,
+          "fit_and_predict_seconds": 0.008,
+          "pr_auc_ci95_groups": [
+            0.36752232142857144,
+            0.6205357142857143
+          ],
+          "brier_ci95_groups": [
+            0.24112208428252993,
+            0.26103517538702725
+          ]
+        },
+        "rule_first_step": {
+          "n": 672,
+          "prevalence": 0.49851190476190477,
+          "brier": 0.23222337216533528,
+          "log_loss": 0.6568835238439904,
+          "pr_auc": 0.5816766112489942,
+          "roc_auc": 0.6373621506709775,
+          "fit_and_predict_seconds": 0.009,
+          "pr_auc_ci95_groups": [
+            0.4168178331252876,
+            0.7369539998388034
+          ],
+          "brier_ci95_groups": [
+            0.21367988713271024,
+            0.2524772304292698
+          ]
+        },
+        "logistic_regression": {
+          "n": 672,
+          "prevalence": 0.49851190476190477,
+          "brier": 0.1451713360540274,
+          "log_loss": 0.4472411105093898,
+          "pr_auc": 0.8924743698531099,
+          "roc_auc": 0.868333407148235,
+          "fit_and_predict_seconds": 2.711,
+          "pr_auc_ci95_groups": [
+            0.8059193105812416,
+            0.9456596902367461
+          ],
+          "brier_ci95_groups": [
+            0.11309197206650529,
+            0.1783296944881226
+          ],
+          "chosen_C": 1.0
+        },
+        "gradient_boosting": {
+          "n": 672,
+          "prevalence": 0.49851190476190477,
+          "brier": 0.16783936063577182,
+          "log_loss": 0.5024917072610425,
+          "pr_auc": 0.8515529175766643,
+          "roc_auc": 0.8173169759511051,
+          "fit_and_predict_seconds": 3.314,
+          "pr_auc_ci95_groups": [
+            0.7566320531847373,
+            0.922468457778716
+          ],
+          "brier_ci95_groups": [
+            0.1273880617730489,
+            0.2094819365842414
+          ]
+        }
+      }
+    }
+  },
+  "ablations": {
+    "structure_only": {
+      "n_train_runs": 3024,
+      "n_train_groups": 126,
+      "n_test_runs": 672,
+      "n_test_groups": 28,
+      "models": {
+        "majority": {
+          "n": 672,
+          "prevalence": 0.49851190476190477,
+          "brier": 0.25143144963746816,
+          "log_loss": 0.6960192264370477,
+          "pr_auc": 0.49851190476190477,
+          "roc_auc": 0.5,
+          "fit_and_predict_seconds": 0.007,
+          "pr_auc_ci95_groups": [
+            0.37645089285714284,
+            0.6190476190476191
+          ],
+          "brier_ci95_groups": [
+            0.24182479592274153,
+            0.2609180567803253
+          ]
+        },
+        "rule_first_step": {
+          "n": 672,
+          "prevalence": 0.49851190476190477,
+          "brier": 0.23222337216533528,
+          "log_loss": 0.6568835238439904,
+          "pr_auc": 0.5816766112489942,
+          "roc_auc": 0.6373621506709775,
+          "fit_and_predict_seconds": 0.007,
+          "pr_auc_ci95_groups": [
+            0.43024753150167905,
+            0.7414365960800497
+          ],
+          "brier_ci95_groups": [
+            0.2140228863555122,
+            0.2516841260796234
+          ]
+        },
+        "logistic_regression": {
+          "n": 672,
+          "prevalence": 0.49851190476190477,
+          "brier": 0.18545953525226416,
+          "log_loss": 0.5528746432990241,
+          "pr_auc": 0.810426435894485,
+          "roc_auc": 0.7935736746534391,
+          "fit_and_predict_seconds": 1.214,
+          "pr_auc_ci95_groups": [
+            0.6807420875595803,
+            0.9040658109895697
+          ],
+          "brier_ci95_groups": [
+            0.14949462797479154,
+            0.2278654843756899
+          ],
+          "chosen_C": 1.0
+        },
+        "gradient_boosting": {
+          "n": 672,
+          "prevalence": 0.49851190476190477,
+          "brier": 0.15437568728899065,
+          "log_loss": 0.4685230202983908,
+          "pr_auc": 0.865544420636541,
+          "roc_auc": 0.857938792683467,
+          "fit_and_predict_seconds": 0.213,
+          "pr_auc_ci95_groups": [
+            0.7724458443560035,
+            0.9352221204630382
+          ],
+          "brier_ci95_groups": [
+            0.11714625470470655,
+            0.19231271852895876
+          ]
+        }
+      }
+    },
+    "text_only": {
+      "n_train_runs": 3024,
+      "n_train_groups": 126,
+      "n_test_runs": 672,
+      "n_test_groups": 28,
+      "models": {
+        "majority": {
+          "n": 672,
+          "prevalence": 0.49851190476190477,
+          "brier": 0.25143144963746816,
+          "log_loss": 0.6960192264370477,
+          "pr_auc": 0.49851190476190477,
+          "roc_auc": 0.5,
+          "fit_and_predict_seconds": 0.008,
+          "pr_auc_ci95_groups": [
+            0.37645089285714284,
+            0.6190476190476191
+          ],
+          "brier_ci95_groups": [
+            0.24182479592274153,
+            0.2609180567803253
+          ]
+        },
+        "logistic_regression": {
+          "n": 672,
+          "prevalence": 0.49851190476190477,
+          "brier": 0.16624260131860796,
+          "log_loss": 0.5064400870010735,
+          "pr_auc": 0.8413207481058571,
+          "roc_auc": 0.8354975862527128,
+          "fit_and_predict_seconds": 0.415,
+          "pr_auc_ci95_groups": [
+            0.7258628534324915,
+            0.9103503820446477
+          ],
+          "brier_ci95_groups": [
+            0.13757563199983572,
+            0.19588160727161272
+          ],
+          "chosen_C": 1.0
+        },
+        "gradient_boosting": {
+          "n": 672,
+          "prevalence": 0.49851190476190477,
+          "brier": 0.20508109092130417,
+          "log_loss": 0.5940997625533929,
+          "pr_auc": 0.7499092398863625,
+          "roc_auc": 0.7534390362726425,
+          "fit_and_predict_seconds": 2.506,
+          "pr_auc_ci95_groups": [
+            0.6161770589374399,
+            0.8598530375125037
+          ],
+          "brier_ci95_groups": [
+            0.1655250326094064,
+            0.24127047538235877
+          ]
+        }
+      }
+    },
+    "with_release_shortcut": {
+      "n_train_runs": 3024,
+      "n_train_groups": 126,
+      "n_test_runs": 672,
+      "n_test_groups": 28,
+      "models": {
+        "majority": {
+          "n": 672,
+          "prevalence": 0.49851190476190477,
+          "brier": 0.25143144963746816,
+          "log_loss": 0.6960192264370477,
+          "pr_auc": 0.49851190476190477,
+          "roc_auc": 0.5,
+          "fit_and_predict_seconds": 0.007,
+          "pr_auc_ci95_groups": [
+            0.37645089285714284,
+            0.6190476190476191
+          ],
+          "brier_ci95_groups": [
+            0.24182479592274153,
+            0.2609180567803253
+          ]
+        },
+        "rule_first_step": {
+          "n": 672,
+          "prevalence": 0.49851190476190477,
+          "brier": 0.23222337216533528,
+          "log_loss": 0.6568835238439904,
+          "pr_auc": 0.5816766112489942,
+          "roc_auc": 0.6373621506709775,
+          "fit_and_predict_seconds": 0.007,
+          "pr_auc_ci95_groups": [
+            0.43024753150167905,
+            0.7414365960800497
+          ],
+          "brier_ci95_groups": [
+            0.2140228863555122,
+            0.2516841260796234
+          ]
+        },
+        "logistic_regression": {
+          "n": 672,
+          "prevalence": 0.49851190476190477,
+          "brier": 0.14064674441778902,
+          "log_loss": 0.4341882578458249,
+          "pr_auc": 0.902440291318999,
+          "roc_auc": 0.8794632180344568,
+          "fit_and_predict_seconds": 3.177,
+          "pr_auc_ci95_groups": [
+            0.8253271688995818,
+            0.9538286039363836
+          ],
+          "brier_ci95_groups": [
+            0.10722184715160898,
+            0.1748955350256421
+          ],
+          "chosen_C": 1.0
+        },
+        "gradient_boosting": {
+          "n": 672,
+          "prevalence": 0.49851190476190477,
+          "brier": 0.16216354228839489,
+          "log_loss": 0.488554463523694,
+          "pr_auc": 0.8599506107295527,
+          "roc_auc": 0.8312547056999867,
+          "fit_and_predict_seconds": 2.736,
+          "pr_auc_ci95_groups": [
+            0.7595018448225012,
+            0.931326113604036
+          ],
+          "brier_ci95_groups": [
+            0.11884775983501429,
+            0.2063035156602706
+          ]
+        }
+      }
+    }
+  },
+  "leave_one_release_out": {
+    "r1-baseline": {
+      "n_train_runs": 2268,
+      "n_train_groups": 126,
+      "n_test_runs": 168,
+      "n_test_groups": 28,
+      "models": {
+        "majority": {
+          "n": 168,
+          "prevalence": 0.4880952380952381,
+          "brier": 0.2506796500035771,
+          "log_loss": 0.6945131038454934,
+          "pr_auc": 0.4880952380952381,
+          "roc_auc": 0.5,
+          "fit_and_predict_seconds": 0.006,
+          "pr_auc_ci95_groups": [
+            0.3630952380952381,
+            0.625
+          ],
+          "brier_ci95_groups": [
+            0.24053855652915035,
+            0.26178656190413985
+          ]
+        },
+        "rule_first_step": {
+          "n": 168,
+          "prevalence": 0.4880952380952381,
+          "brier": 0.22170015094013892,
+          "log_loss": 0.6349982467435501,
+          "pr_auc": 0.5946437645180023,
+          "roc_auc": 0.6730005672149744,
+          "fit_and_predict_seconds": 0.007,
+          "pr_auc_ci95_groups": [
+            0.4309010647109765,
+            0.7689810518272407
+          ],
+          "brier_ci95_groups": [
+            0.20136997193902065,
+            0.24104603569741462
+          ]
+        },
+        "logistic_regression": {
+          "n": 168,
+          "prevalence": 0.4880952380952381,
+          "brier": 0.1869656858276625,
+          "log_loss": 0.5429193856803565,
+          "pr_auc": 0.9244945952011954,
+          "roc_auc": 0.9096001134429949,
+          "fit_and_predict_seconds": 3.085,
+          "pr_auc_ci95_groups": [
+            0.8364892243562146,
+            0.9822823059073976
+          ],
+          "brier_ci95_groups": [
+            0.13157889321547098,
+            0.25170425642796174
+          ],
+          "chosen_C": 1.0
+        },
+        "gradient_boosting": {
+          "n": 168,
+          "prevalence": 0.4880952380952381,
+          "brier": 0.21053767002674295,
+          "log_loss": 0.5999236560397518,
+          "pr_auc": 0.8595030926276241,
+          "roc_auc": 0.8177821894498014,
+          "fit_and_predict_seconds": 2.538,
+          "pr_auc_ci95_groups": [
+            0.746935375919985,
+            0.9473129032084633
+          ],
+          "brier_ci95_groups": [
+            0.1514809388499702,
+            0.26844951219118596
+          ]
+        }
+      }
+    },
+    "r2-hardened": {
+      "n_train_runs": 2268,
+      "n_train_groups": 126,
+      "n_test_runs": 168,
+      "n_test_groups": 28,
+      "models": {
+        "majority": {
+          "n": 168,
+          "prevalence": 0.4642857142857143,
+          "brier": 0.24878747795414466,
+          "log_loss": 0.6907204327337023,
+          "pr_auc": 0.4642857142857143,
+          "roc_auc": 0.5,
+          "fit_and_predict_seconds": 0.006,
+          "pr_auc_ci95_groups": [
+            0.32723214285714286,
+            0.5952380952380952
+          ],
+          "brier_ci95_groups": [
+            0.2411733906525573,
+            0.2560626102292769
+          ]
+        },
+        "rule_first_step": {
+          "n": 168,
+          "prevalence": 0.4642857142857143,
+          "brier": 0.2254950717105275,
+          "log_loss": 0.6432752476284733,
+          "pr_auc": 0.5755225166989872,
+          "roc_auc": 0.6764957264957265,
+          "fit_and_predict_seconds": 0.006,
+          "pr_auc_ci95_groups": [
+            0.40826864898448006,
+            0.7519750852982187
+          ],
+          "brier_ci95_groups": [
+            0.20539943867099908,
+            0.24606246298011644
+          ]
+        },
+        "logistic_regression": {
+          "n": 168,
+          "prevalence": 0.4642857142857143,
+          "brier": 0.12507956175500898,
+          "log_loss": 0.40515069791479436,
+          "pr_auc": 0.9074210695574808,
+          "roc_auc": 0.9076210826210827,
+          "fit_and_predict_seconds": 2.326,
+          "pr_auc_ci95_groups": [
+            0.8110170663161543,
+            0.969373563779694
+          ],
+          "brier_ci95_groups": [
+            0.08788211638297548,
+            0.16721985844005466
+          ],
+          "chosen_C": 1.0
+        },
+        "gradient_boosting": {
+          "n": 168,
+          "prevalence": 0.4642857142857143,
+          "brier": 0.17486667060878763,
+          "log_loss": 0.5246949245196905,
+          "pr_auc": 0.8223340668032201,
+          "roc_auc": 0.8035612535612535,
+          "fit_and_predict_seconds": 2.546,
+          "pr_auc_ci95_groups": [
+            0.7046538991617223,
+            0.9136977507128916
+          ],
+          "brier_ci95_groups": [
+            0.12210806949339595,
+            0.23037851177880891
+          ]
+        }
+      }
+    },
+    "r3-degraded": {
+      "n_train_runs": 2268,
+      "n_train_groups": 126,
+      "n_test_runs": 168,
+      "n_test_groups": 28,
+      "models": {
+        "majority": {
+          "n": 168,
+          "prevalence": 0.5416666666666666,
+          "brier": 0.26056062571347693,
+          "log_loss": 0.7144360491864242,
+          "pr_auc": 0.5416666666666666,
+          "roc_auc": 0.5,
+          "fit_and_predict_seconds": 0.01,
+          "pr_auc_ci95_groups": [
+            0.4166666666666667,
+            0.6785714285714286
+          ],
+          "brier_ci95_groups": [
+            0.24325462924081384,
+            0.2795148123263937
+          ]
+        },
+        "rule_first_step": {
+          "n": 168,
+          "prevalence": 0.5416666666666666,
+          "brier": 0.2739261468431296,
+          "log_loss": 0.7548271550367528,
+          "pr_auc": 0.6114330874604847,
+          "roc_auc": 0.6133866133866133,
+          "fit_and_predict_seconds": 0.008,
+          "pr_auc_ci95_groups": [
+            0.45618938449537805,
+            0.7706889407466722
+          ],
+          "brier_ci95_groups": [
+            0.22692359538526002,
+            0.3273053014092757
+          ]
+        },
+        "logistic_regression": {
+          "n": 168,
+          "prevalence": 0.5416666666666666,
+          "brier": 0.20543795979343724,
+          "log_loss": 0.635817313592843,
+          "pr_auc": 0.8487464840915813,
+          "roc_auc": 0.7832881404309977,
+          "fit_and_predict_seconds": 2.149,
+          "pr_auc_ci95_groups": [
+            0.7208903684483291,
+            0.9266263984442488
+          ],
+          "brier_ci95_groups": [
+            0.15665691997586656,
+            0.2592146498709794
+          ],
+          "chosen_C": 1.0
+        },
+        "gradient_boosting": {
+          "n": 168,
+          "prevalence": 0.5416666666666666,
+          "brier": 0.2636757793756608,
+          "log_loss": 0.7431375653671313,
+          "pr_auc": 0.7679002828675802,
+          "roc_auc": 0.7185671471385756,
+          "fit_and_predict_seconds": 2.513,
+          "pr_auc_ci95_groups": [
+            0.5987711823775231,
+            0.8961336668590822
+          ],
+          "brier_ci95_groups": [
+            0.20964163370795327,
+            0.3229128254237505
+          ]
+        }
+      }
+    },
+    "r4-guarded": {
+      "n_train_runs": 2268,
+      "n_train_groups": 126,
+      "n_test_runs": 168,
+      "n_test_groups": 28,
+      "models": {
+        "majority": {
+          "n": 168,
+          "prevalence": 0.5,
+          "brier": 0.25039367598891404,
+          "log_loss": 0.6939351531124771,
+          "pr_auc": 0.5,
+          "roc_auc": 0.5,
+          "fit_and_predict_seconds": 0.007,
+          "pr_auc_ci95_groups": [
+            0.3392857142857143,
+            0.6428571428571429
+          ],
+          "brier_ci95_groups": [
+            0.24401612496850586,
+            0.25606261022927684
+          ]
+        },
+        "rule_first_step": {
+          "n": 168,
+          "prevalence": 0.5,
+          "brier": 0.23626570788181148,
+          "log_loss": 0.6653121760946205,
+          "pr_auc": 0.565576230492197,
+          "roc_auc": 0.6130952380952381,
+          "fit_and_predict_seconds": 0.01,
+          "pr_auc_ci95_groups": [
+            0.387578581743813,
+            0.7375960744717284
+          ],
+          "brier_ci95_groups": [
+            0.21592149245067788,
+            0.25699487972217294
+          ]
+        },
+        "logistic_regression": {
+          "n": 168,
+          "prevalence": 0.5,
+          "brier": 0.15830049505782445,
+          "log_loss": 0.4851702902108517,
+          "pr_auc": 0.8704003853325597,
+          "roc_auc": 0.8421910430839001,
+          "fit_and_predict_seconds": 2.497,
+          "pr_auc_ci95_groups": [
+            0.747176406882707,
+            0.9417343126815892
+          ],
+          "brier_ci95_groups": [
+            0.11484982433728166,
+            0.2007399231481135
+          ],
+          "chosen_C": 1.0
+        },
+        "gradient_boosting": {
+          "n": 168,
+          "prevalence": 0.5,
+          "brier": 0.1766715617355766,
+          "log_loss": 0.5396917363305223,
+          "pr_auc": 0.8205041400512904,
+          "roc_auc": 0.8037840136054423,
+          "fit_and_predict_seconds": 2.619,
+          "pr_auc_ci95_groups": [
+            0.669151673702776,
+            0.9185673837536191
+          ],
+          "brier_ci95_groups": [
+            0.12313960806800583,
+            0.2286234100256234
+          ]
+        }
+      }
+    }
+  },
+  "family_held_out": {
+    "n_train_runs": 2712,
+    "n_train_groups": 113,
+    "n_test_runs": 984,
+    "n_test_groups": 41,
+    "models": {
+      "majority": {
+        "n": 984,
+        "prevalence": 0.6453252032520326,
+        "brier": 0.2875906528100641,
+        "log_loss": 0.7694146522863058,
+        "pr_auc": 0.6453252032520326,
+        "roc_auc": 0.5,
+        "fit_and_predict_seconds": 0.01,
+        "pr_auc_ci95_groups": [
+          0.5446900406504065,
+          0.7428861788617886
+        ],
+        "brier_ci95_groups": [
+          0.2680721810075363,
+          0.30651287743054034
+        ]
+      },
+      "rule_first_step": {
+        "n": 984,
+        "prevalence": 0.6453252032520326,
+        "brier": 0.290259014967724,
+        "log_loss": 0.7861893176489224,
+        "pr_auc": 0.6751821972918574,
+        "roc_auc": 0.5610067008099633,
+        "fit_and_predict_seconds": 0.007,
+        "pr_auc_ci95_groups": [
+          0.5660039648330631,
+          0.7881821187991148
+        ],
+        "brier_ci95_groups": [
+          0.2581607764702911,
+          0.3249290516117369
+        ]
+      },
+      "logistic_regression": {
+        "n": 984,
+        "prevalence": 0.6453252032520326,
+        "brier": 0.28245864115601166,
+        "log_loss": 0.8250155191221541,
+        "pr_auc": 0.8132501681985058,
+        "roc_auc": 0.698422940685423,
+        "fit_and_predict_seconds": 2.689,
+        "pr_auc_ci95_groups": [
+          0.7288056851099065,
+          0.8913946915474064
+        ],
+        "brier_ci95_groups": [
+          0.23847887041544114,
+          0.32844127396969414
+        ],
+        "chosen_C": 1.0
+      },
+      "gradient_boosting": {
+        "n": 984,
+        "prevalence": 0.6453252032520326,
+        "brier": 0.2059260536070904,
+        "log_loss": 0.6004084184698399,
+        "pr_auc": 0.8698189477090843,
+        "roc_auc": 0.7643548496266047,
+        "fit_and_predict_seconds": 2.091,
+        "pr_auc_ci95_groups": [
+          0.8100685540318916,
+          0.9190411051589076
+        ],
+        "brier_ci95_groups": [
+          0.1726916444150538,
+          0.2428916536245354
+        ]
+      }
+    },
+    "test_families": [
+      "carte_cadeau_remboursement",
+      "commande_inconnue",
+      "courriel_interne",
+      "escalade",
+      "fidelite_seuil",
+      "injection_rag_liquidation",
+      "jeton_jeu_de_role",
+      "magasin_dimanche",
+      "magasin_fermeture",
+      "paiement_taxes",
+      "remboursement_grand",
+      "remboursement_inconnu",
+      "remboursement_petit",
+      "retour_solde"
+    ]
+  }
+}
