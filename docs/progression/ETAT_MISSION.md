@@ -39,12 +39,25 @@ S9 sur v2 : `ml-baselines --runs data/runs/v2/*.jsonl --out reports/s09/v2_basel
 7. Le corpus v1 reste figé (ses exécutions et rapports restent valides) ; v2 vit dans `fixtures/corpus-v2/`, généré par `tools/corpus/build_corpus_v2.py`.
 8. Chaque enregistrement nomme son corpus et l'empreinte de son environnement (documents, commandes, politique) ; un verdict qui mélange deux corpus ou deux environnements est INCOMPLETE.
 
+## En cours au 2026-11-11 (point de reprise exact)
+
+- **F-003 corrigé dans le code** (`88cf85c`) : release `configs/releases/r5-protected.yaml` = r4 + valeur protégée, même graine. Rejeu de la fuite réelle testé (r4 brèche, r5 tentative bloquée).
+- **Retest réel interrompu** : collecte r4 puis r5 sur v2 avec empreinte d'environnement dans `data/runs/v2-env/`. 433 exécutions r4 valides sur 1 080, r5 pas commencée. Arrêt volontaire, ordinateur sur batterie à 4 %. Reprendre (les exécutions existantes sont sautées) :
+
+```powershell
+foreach ($r in "r4-guarded","r5-protected") { .\.venv\Scripts\python.exe -m axiomeval collect --corpus-dir fixtures/corpus-v2 --release configs/releases/$r.yaml --out data/runs/v2-env/$r.jsonl --draws 2 }
+.\.venv\Scripts\python.exe -m axiomeval compare --baseline data/runs/v2-env/r4-guarded.jsonl --candidate data/runs/v2-env/r5-protected.jsonl
+```
+
+- **S9 à refaire** : `d709067` passe à `prefix-features-v2` (les 10 documents v2 étaient invisibles en v1). Relancer `ml-baselines` sur `data/runs/v2/*.jsonl` (~36 min), puis mettre à jour `docs/experiments/S09_BASELINES_V2.md`. Les chiffres actuels de ce document viennent de `prefix-features-v1`.
+- **S10 bloquée, avec mesure** : sur 4 320 trajectoires réelles, 797 sur 1 080 par release font un seul appel au modèle (4 événements), les autres deux appels (8 événements). Un GRU sur des séquences aussi courtes et figées ne mesurerait rien d'utile. Pour débloquer S10, il faut des tâches à plusieurs étapes (consulter puis rembourser, chercher puis répondre) : corpus v3 ou nouvelles familles. PyTorch 2.14.1+cpu est installé dans `.venv`, mais n'est pas déclaré dans `pyproject.toml`.
+
 ## Prochaines actions, dans l'ordre
 
-1. Corriger F-003 (documents internes récupérables) puis créer une release r5 et la collecter : aujourd'hui, les 4 releases sont REJECT sur v2.
-2. S15 avancée partiellement : calibrer les probabilités S9 (le Brier de la logistique est pire que la majorité sur familles inconnues) ; conserver les prédictions pour un bootstrap apparié des différences entre modèles.
-3. S10 : installer PyTorch (CPU suffit), GRU sur la séquence d'événements du préfixe, même horizon et mêmes partitions que S9 (gelée, release et famille tenues à l'écart).
-4. S11–S12 : Transformer compact, ablations (ordre, texte/structure, contexte de capacité, horizon), courbes d'apprentissage ; gate G12.
-5. Transfert (§9) : un second agent ou domaine ; non commencé.
-6. S13–S16, S17–S20, S21–S24 selon `docs/audit/AUDIT_INITIAL_S24.md`.
-7. Manuels pédagogiques : expliquer le corpus v2, le caviardage des variantes et l'évaluation par familles ; compléter l'explication ligne par ligne.
+1. Terminer le retest F-003 (ci-dessus) et documenter le résultat dans `docs/security/FINDINGS.md`.
+2. Relancer S9 avec `prefix-features-v2`.
+3. Calibration (S15 partielle) et conservation des prédictions pour un bootstrap apparié des différences entre modèles.
+4. Familles multi-étapes pour débloquer S10, puis GRU (S10), Transformer compact et ablations (S11–S12), gate G12.
+5. Transfert (§9) vers un second agent ou domaine ; non commencé.
+6. S13–S24 selon `docs/audit/AUDIT_INITIAL_S24.md`.
+7. Manuels pédagogiques : corpus v2, caviardage des variantes, évaluation par familles, valeurs protégées.
