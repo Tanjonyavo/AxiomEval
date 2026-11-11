@@ -148,7 +148,7 @@ code { font-family: Consolas, monospace; font-size: 9pt; } pre { white-space: pr
 .toc a { text-decoration: none; color: #1d2433; }
 .part { break-before: page; } .partlabel { color: #4a5568; font-size: 9pt; text-transform: uppercase; letter-spacing: 0.5px; }
 .partnote { border-left: 4px solid #b45309; background: #fdf6ec; padding: 6px 10px; }
-.alltoc, .alltoc ol { list-style: none; } .alltoc > li { margin-top: 6px; } .alltoc ol { font-size: 9.5pt; } .warn { border-left: 4px solid #b45309; background: #fdf6ec; padding: 6px 10px; }
+.alltoc, .alltoc ol { list-style: none; } .repodoc { break-before: page; } .repodoc:first-child { break-before: auto; } .alltoc > li { margin-top: 6px; } .alltoc ol { font-size: 9.5pt; } .warn { border-left: 4px solid #b45309; background: #fdf6ec; padding: 6px 10px; }
 """ + HtmlFormatter().get_style_defs(".src")
 
 KATEX = ('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">'
@@ -202,25 +202,44 @@ def build() -> None:
     write_all_in_one(sources, volumes, commit)
 
 
-# Reading order of the single PDF. Each entry: (key, title, note). A source written before later work
-# says so in its note, so an old "not implemented" is never read as the current state.
+# Reading order of the single PDF. Each entry: (kind, key, title, note). A source written before later work
+# says so in its note, so an old "not implemented" is never read as the current state. A "repo" entry
+# gathers documents of the repository itself, so the PDF covers everything published on GitHub.
 OLD = ("Rédigé le {date} (commit <code>{sha}</code>), avant le corpus v3, S10 et les releases r7–r8. Là où il dit "
        "S10 « non implémentée » ou S09 « partielle », c'est dépassé : l'état actuel est dans la partie 1 "
        "(guide complet) et dans <code>docs/progression/ETAT_MISSION.md</code>.")
+REPO_NOTE = "Documents du dépôt, reproduits tels qu'ils sont sur GitHub ; chacun indique son dernier commit."
+GITHUB = "https://github.com/Tanjonyavo/AxiomEval/blob/main/"
 ALL_IN_ONE = [
-    ("AxiomEval_Guide_v3_S10_et_Pistes", "Guide complet de compréhension",
+    ("guide", "AxiomEval_Guide_v3_S10_et_Pistes", "Guide complet de compréhension",
      "À lire en premier. Version la plus récente ({date}, commit <code>{sha}</code>) : tout le projet, puis le "
      "corpus v3, S10, r7, r8, les pistes pour continuer et les exercices."),
-    ("AxiomEval_Manuel_Integral_S01_S26", "Manuel intégral S01–S26", OLD),
-    ("AxiomEval_Mathematiques_IA_S01_S26", "Mathématiques de l'IA", OLD),
-    ("AxiomEval_Exercices_Corriges_S01_S26", "Exercices corrigés S04–S09", OLD),
-    ("AxiomEval_Preparation_Entrevues_IA", "Préparation aux entrevues", OLD),
-    ("PARCOURS_MAITRISE_PERSONNEL", "Parcours de maîtrise", OLD),
-    ("01", "Code expliqué — volume 01", None),
-    ("02", "Code expliqué — volume 02", None),
-    ("03", "Code expliqué — volume 03", None),
-    ("INDEX_CODE_EXPLIQUE", "Index de couverture du code expliqué",
-     "Mesuré par <code>tools/pedagogie/build.py</code> au même commit que les parties 7 à 9."),
+    ("repo", ("RESULTATS.md", "README.md"), "Résultats vérifiables et présentation", REPO_NOTE),
+    ("repo", ("docs/security/THREAT_MODEL.md", "docs/security/FINDINGS.md",
+              "docs/security/RAPPORT_SECURITE_CORPUS_PRINCIPAL.md", "docs/security/RAPPORT_SECURITE_CORPUS_REGRESSION.md",
+              "docs/security/RAPPORT_SECURITE_CORPUS_V2.md"), "Sécurité : menaces, failles et rapports", REPO_NOTE),
+    ("repo", ("docs/experiments/S09_BASELINES.md", "docs/experiments/S09_BASELINES_V2.md",
+              "docs/experiments/V3_TRAJECTOIRES.md", "docs/experiments/S10_SEQUENCES_V3.md"),
+     "Expériences S09 et S10", REPO_NOTE),
+    ("repo", ("docs/data/DATA_CARD.md", "docs/data/DATA_CARD_SECURITY.md", "docs/data/DATA_CARD_V2.md",
+              "docs/data/DATA_CARD_V3.md", "fixtures/corpus-v3/kb/*.md"), "Données : data cards et base documentaire",
+     REPO_NOTE + " La base documentaire est celle du corpus v3 ; les corpus plus anciens en utilisent une partie."),
+    ("repo", ("docs/architecture.md", "docs/decisions.md", "labs/README.md", "docs/semaine-01/audit.md",
+              "docs/semaine-01/validation.md", "docs/semaine-02/fiche-offre.md", "docs/semaine-06/adaptateur-et-traces.md"),
+     "Architecture, décisions et premières semaines", REPO_NOTE),
+    ("repo", ("docs/audit/AUDIT_INITIAL_S24.md", "docs/progression/RAPPORT_FINAL_S24.md",
+              "docs/progression/ETAT_MISSION.md", "docs/progression/COMMITS_S07_S24.md"),
+     "Audit, progression et point de reprise", REPO_NOTE),
+    ("old", "AxiomEval_Manuel_Integral_S01_S26", "Manuel intégral S01–S26", OLD),
+    ("old", "AxiomEval_Mathematiques_IA_S01_S26", "Mathématiques de l'IA", OLD),
+    ("old", "AxiomEval_Exercices_Corriges_S01_S26", "Exercices corrigés S04–S09", OLD),
+    ("old", "AxiomEval_Preparation_Entrevues_IA", "Préparation aux entrevues", OLD),
+    ("old", "PARCOURS_MAITRISE_PERSONNEL", "Parcours de maîtrise", OLD),
+    ("code", "01", "Code expliqué — volume 01", None),
+    ("code", "02", "Code expliqué — volume 02", None),
+    ("code", "03", "Code expliqué — volume 03", None),
+    ("index", "INDEX_CODE_EXPLIQUE", "Index de couverture du code expliqué",
+     "Mesuré par <code>tools/pedagogie/build.py</code> au même commit que les volumes de code."),
 ]
 
 
@@ -241,13 +260,52 @@ def headings(body: str, level: int) -> list[tuple[str, str]]:
     return [(i, re.sub(r"<[^>]+>", "", t)) for i, t in re.findall(pattern, body, flags=re.S)]
 
 
+def github_links(body: str, rel: str) -> str:
+    """A relative link in a repository document points to GitHub, since the PDF has no file tree."""
+    base = Path(rel).parent
+
+    def fix(m):
+        target = m.group(1)
+        if re.match(r"[a-z]+:|#", target):
+            return m.group(0)
+        parts = []
+        for piece in (base / target).as_posix().split("/"):
+            if piece == "..":
+                if parts:
+                    parts.pop()
+            elif piece not in ("", "."):
+                parts.append(piece)
+        return f'href="{GITHUB}{"/".join(parts)}"'
+    return re.sub(r'href="([^"]+)"', fix, body)
+
+
+def repo_docs(patterns: tuple[str, ...]) -> list[Path]:
+    found = []
+    for pattern in patterns:
+        found += sorted(ROOT.glob(pattern)) if "*" in pattern else [ROOT / pattern]
+    return found
+
+
 def write_all_in_one(sources: dict, volumes: dict, commit: str) -> None:
-    parts, toc = [], []
-    for n, (key, title, note) in enumerate(ALL_IN_ONE, 1):
+    parts, toc, kinds = [], [], {}
+    for n, (kind, key, title, note) in enumerate(ALL_IN_ONE, 1):
         prefix = f"p{n}"
-        if key in volumes:
+        kinds.setdefault(kind, []).append(n)
+        if kind == "code":
             body = prefixed(volumes[key], prefix)
-            subs = [(i, t) for i, t in re.findall(r'<section class="file" id="([^"]+)"><h2>(.*?)</h2>', body)]
+            subs = re.findall(r'<section class="file" id="([^"]+)"><h2>(.*?)</h2>', body)
+        elif kind == "repo":
+            docs, subs = [], []
+            for i, path in enumerate(repo_docs(key)):
+                rel = path.relative_to(ROOT).as_posix()
+                sha, date = last_change(path)
+                anchor = f"{prefix}-doc{i}"
+                text = github_links(md(path.read_text(encoding="utf-8")), rel)
+                docs.append(f'<section class="repodoc" id="{anchor}"><p class="meta"><code>{html.escape(rel)}</code> '
+                            f'· dernier commit <code>{sha}</code> ({date}) · <a href="{GITHUB}{rel}">voir sur GitHub</a>'
+                            f'</p>{prefixed(text, anchor)}</section>')
+                subs.append((anchor, html.escape(rel)))
+            body = "".join(docs)
         else:
             path = PED / "sources" / f"{key}.md"
             path = path if path.exists() else PED / f"{key}.md"
@@ -260,13 +318,20 @@ def write_all_in_one(sources: dict, volumes: dict, commit: str) -> None:
                      f'{html.escape(title)}</p>{banner}{body}</section>')
         items = "".join(f'<li><a href="#{i}">{t}</a></li>' for i, t in subs)
         toc.append(f'<li><a href="#{prefix}"><b>Partie {n} — {html.escape(title)}</b></a><ol>{items}</ol></li>')
-    cover = (f'<h1>AxiomEval — tout en un</h1><p>Tous les documents pédagogiques du dépôt dans un seul fichier. '
-             f'Code exact au commit <code>{commit}</code>. Chaque ligne du sommaire est un lien vers sa page.</p>'
-             '<div class="warn"><p><b>Ordre de lecture conseillé.</b> Partie 1 d\'abord : elle explique tout le '
-             'projet et donne l\'état actuel. Parties 2 à 6 : manuels plus anciens, gardés tels quels, '
-             'chacun avec sa date ; quand ils contredisent la partie 1, la partie 1 a raison. Parties 7 à 9 : le '
-             'code ligne à ligne, à consulter quand un passage renvoie à un fichier ; partie 10 : '
-             'quelles lignes sont expliquées.</p></div>'
+
+    def span(kind: str) -> str:
+        ns = kinds.get(kind, [])
+        return f"Partie {ns[0]}" if len(ns) == 1 else f"Parties {ns[0]} à {ns[-1]}"
+    cover = (f'<h1>AxiomEval — tout en un</h1><p>Tout ce qui est publié sur GitHub '
+             f'(<a href="https://github.com/Tanjonyavo/AxiomEval">github.com/Tanjonyavo/AxiomEval</a>) dans un seul '
+             f'fichier : guide, résultats, documents du dépôt, manuels et code expliqué ligne à ligne. Code exact au '
+             f'commit <code>{commit}</code>. Chaque ligne du sommaire est un lien vers sa page.</p>'
+             f'<div class="warn"><p><b>Ordre de lecture conseillé.</b> {span("guide")} d\'abord : elle explique tout '
+             f'le projet et donne l\'état actuel. {span("repo")} : les documents du dépôt (résultats vérifiables, '
+             f'sécurité, expériences, données, architecture, progression). {span("old")} : manuels plus anciens, '
+             f'gardés tels quels, chacun avec sa date ; quand ils contredisent la partie 1, la partie 1 a raison. '
+             f'{span("code")} : le code ligne à ligne, à consulter quand un passage renvoie à un fichier. '
+             f'{span("index")} : quelles lignes sont expliquées.</p></div>'
              f'<h2>Sommaire</h2><ol class="toc alltoc">{"".join(toc)}</ol>')
     (OUT / "AxiomEval_Tout_En_Un.html").write_text(page("AxiomEval — tout en un", cover + "".join(parts)),
                                                    encoding="utf-8")
