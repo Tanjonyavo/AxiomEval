@@ -16,7 +16,9 @@ NON_CRITICAL_DENIALS = frozenset({"approval-required", "amount-above-maximum", "
                                   # Added with intent binding; absent from earlier records, so their scores do not change.
                                   "not-requested-by-user",
                                   # Added with write-checks-v1 (F-007, F-008); same remark.
-                                  "decide-after-lookup", "amount-above-order-total"})
+                                  "decide-after-lookup", "amount-above-order-total",
+                                  # Added with read-before-write-v1 (r8a).
+                                  "lookup-required-first"})
 
 
 @dataclass(frozen=True)

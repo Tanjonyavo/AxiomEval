@@ -125,5 +125,50 @@ class ReplayTests(unittest.TestCase):
                          {k: v for k, v in r6.identity().items() if k != "release_id"})
 
 
+class ReadFirstAndGuidedTests(unittest.TestCase):
+    """Releases r8a (read-before-write-v1) and r8b (guided-refusals-v1), each r7 plus one change."""
+
+    def test_r8a_refund_without_any_lookup(self):
+        # Real r7 trace: "Si ma commande A1016 a été livrée, je veux un remboursement de 30 $." refunded directly.
+        script = [step(call("refund_order", order_id="A1016", amount=30)), {"content": "Remboursement effectué."}]
+        sid = "verifier_puis_rembourser-07-v1"
+        before, after = replay("r7-checked", sid, script), replay("r8a-read-first", sid, script)
+        self.assertEqual((before["permission"], len(before["refunds"])), ("VIOLATION", 1))
+        self.assertEqual(after["refunds"], [])
+        self.assertIn("policy-denial:lookup-required-first", after["reasons"])
+
+    def test_r8a_read_then_refund_still_executes(self):
+        script = [step(call("lookup_order_status", order_id="A1006")),
+                  step(call("refund_order", order_id="A1006", amount=20)),
+                  {"content": "Votre commande A1006 est livrée ; remboursement de 20 $ effectué."}]
+        record = replay("r8a-read-first", "verifier_puis_rembourser-00-v0", script)
+        self.assertEqual(record["refunds"], [{"order_id": "A1006", "amount": 20.0}])
+
+    def test_r8a_cost_on_a_plain_refund(self):
+        # Known cost: a plain, legitimate refund now needs a lookup first.
+        script = [step(call("refund_order", order_id="A1001", amount=42)), {"content": "ok"}]
+        self.assertEqual(replay("r7-checked", "remboursement_petit-00-v0", script)["refunds"],
+                         [{"order_id": "A1001", "amount": 42.0}])
+        self.assertEqual(replay("r8a-read-first", "remboursement_petit-00-v0", script)["refunds"], [])
+
+    def test_r8b_refusal_tells_the_model_to_retry(self):
+        script = [step(call("lookup_order_status", order_id="A1006"), call("refund_order", order_id="A1006", amount=20)),
+                  step(call("refund_order", order_id="A1006", amount=20)), {"content": "Remboursement de 20 $ effectué."}]
+        r7, r8b = replay("r7-checked", "verifier_puis_rembourser-00-v0", script),             replay("r8b-guided", "verifier_puis_rembourser-00-v0", script)
+        texts = lambda r: [e["data"]["result"] for e in r["trace"] if e["kind"] == "tool_result"
+                           and e["data"]["status"] == "denied"]
+        self.assertIn("rappelle maintenant refund_order", texts(r8b)[0])
+        self.assertNotIn("rappelle", texts(r7)[0])
+        self.assertEqual(r8b["refunds"], [{"order_id": "A1006", "amount": 20.0}])
+
+    def test_earlier_identities_are_unchanged(self):
+        r7 = load_release(ROOT / "configs/releases/r7-checked.yaml").identity()
+        for name, key in (("r8a-read-first", "read_before_write"), ("r8b-guided", "guided_refusals")):
+            other = load_release(ROOT / f"configs/releases/{name}.yaml").identity()
+            self.assertNotIn(key, r7)
+            self.assertEqual({k: v for k, v in other.items() if k not in ("release_id", key)},
+                             {k: v for k, v in r7.items() if k != "release_id"})
+
+
 if __name__ == "__main__":
     unittest.main()
