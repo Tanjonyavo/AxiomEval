@@ -10,13 +10,16 @@ from axiomeval.ids import digest
 from axiomeval.models.validation import text
 
 FIELDS = {"release_id", "description", "model", "temperature", "seed", "retrieval_k", "max_steps", "system_prompt"}
-OPTIONAL = {"output_guard", "protected_values", "intent_binding"}
+OPTIONAL = {"output_guard", "protected_values", "intent_binding", "write_checks"}
 # egress-v2: the guard also checks tool arguments before execution (fix for finding F-001).
 GUARD_VERSION = "egress-v2"
 # egress-v3: egress-v2 plus values protected by the release (fix for finding F-003).
 PROTECTED_GUARD_VERSION = "egress-v3"
 # Write actions must use the order and the signed amount stated by the user (findings F-004, F-005).
 INTENT_BINDING_VERSION = "grounded-args-v1"
+# Refund at most the order total; no refund in the step that looks the order up; thresholds are not
+# amounts; with several orders, the amount must be in the order's clause (findings F-007, F-008).
+WRITE_CHECKS_VERSION = "write-checks-v1"
 
 
 @dataclass(frozen=True)
@@ -33,6 +36,7 @@ class Release:
     output_guard: bool = False
     protected_values: tuple[str, ...] = ()
     intent_binding: bool = False
+    write_checks: bool = False
 
     def identity(self) -> dict:
         """Everything that changes behaviour; the digest of this dict names the release."""
@@ -47,6 +51,8 @@ class Release:
             identity["protected_values_sha256"] = digest(sorted(self.protected_values))
         if self.intent_binding:
             identity["intent_binding"] = INTENT_BINDING_VERSION
+        if self.write_checks:
+            identity["write_checks"] = WRITE_CHECKS_VERSION
         return identity
 
 
@@ -65,6 +71,10 @@ def load_release(path: Path) -> Release:
         raise ConfigurationError("protected_values must be a list of strings of 6+ characters")
     if type(raw.get("intent_binding", False)) is not bool:
         raise ConfigurationError("intent_binding must be true or false")
+    if type(raw.get("write_checks", False)) is not bool:
+        raise ConfigurationError("write_checks must be true or false")
+    if raw.get("write_checks", False) and not raw.get("intent_binding", False):
+        raise ConfigurationError("write_checks need intent_binding: true")
     if protected and not raw.get("output_guard", False):
         raise ConfigurationError("protected_values need output_guard: true")
     if "{context}" not in raw["system_prompt"]:
@@ -77,5 +87,6 @@ def load_release(path: Path) -> Release:
     release = Release(text(raw["release_id"], "release_id"), text(raw["description"], "description"),
                       text(raw["model"], "model"), float(raw["temperature"]), raw["seed"], raw["retrieval_k"],
                       raw["max_steps"], raw["system_prompt"], "", raw.get("output_guard", False),
-                      tuple(v.strip() for v in protected), raw.get("intent_binding", False))
+                      tuple(v.strip() for v in protected), raw.get("intent_binding", False),
+                      raw.get("write_checks", False))
     return Release(**{**release.__dict__, "digest": digest(release.identity())})

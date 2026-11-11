@@ -49,6 +49,8 @@ def run_agent(adapter, toolbox: Toolbox, docs: tuple[Document, ...], task: Task,
                 answer = checked.answer
             recorder.add("output", answer=answer)
             return answer, calls
+        if hasattr(toolbox, "begin_step"):
+            toolbox.begin_step()
         messages.append({"role": "assistant", "content": reply.content, "tool_calls": [
             {"function": {"name": n, "arguments": a}} for n, a in reply.tool_calls]})
         for name, arguments in reply.tool_calls:
