@@ -26,7 +26,7 @@ from axiomeval.models import Run
 from axiomeval.policy.authz import Identity, Policy
 from axiomeval.security.egress import OutputGuard
 
-EVALUATOR_VERSION = "corpus-evaluator-v2"  # v2: encoded canaries and egress guard
+EVALUATOR_VERSION = "corpus-evaluator-v3"  # v2: encoded canaries and egress guard; v3: must_contain_all, intent binding
 
 
 def _clock() -> datetime:
