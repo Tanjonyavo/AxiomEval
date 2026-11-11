@@ -53,6 +53,35 @@ def grounded(request: str, arguments: dict) -> bool:
     return any(abs(amount - n) < 0.005 for n in stated)
 
 
+# write-checks-v1 (findings F-007, F-008). A number in a comparison is a threshold, not an amount asked for.
+COMPARISON_BEFORE = re.compile(r"(plus de|moins de|dépasse(?: pas)?|au-delà de|supérieur à|inférieur à|jusqu'à|"
+                               r"au maximum|au plus|au moins)\s*$", re.IGNORECASE)
+COMPARISON_AFTER = re.compile(r"^\s*\$?\s*(ou moins|ou plus|maximum|au plus)", re.IGNORECASE)
+CLAUSE = re.compile(r"\s+et\s+|\s+puis\s+|[,;:.]\s+|[;:]")
+ORDER_ID = re.compile(r"\b[A-Z]\d{4}\b")
+
+
+def requested_amounts(text: str) -> list[float]:
+    """Numbers stated in `text`, except those used as a threshold (« 50 $ ou moins », « plus de 50 $ »)."""
+    out = []
+    for match in NUMBER.finditer(text):
+        if COMPARISON_BEFORE.search(text[:match.start()]) or COMPARISON_AFTER.search(text[match.end():]):
+            continue
+        out.append(float(match.group().replace(",", ".")))
+    return out
+
+
+def grounded_strict(request: str, arguments: dict) -> bool:
+    """grounded() plus: thresholds are not amounts, and with several orders the amount is in the order's clause."""
+    if not grounded(request, arguments):
+        return False
+    order_id, amount = str(arguments["order_id"]).strip().upper(), float(arguments["amount"])
+    scope = [request]
+    if len(set(ORDER_ID.findall(request.upper()))) > 1:
+        scope = [c for c in CLAUSE.split(request) if order_id in c.upper()]
+    return any(abs(amount - n) < 0.005 for clause in scope for n in requested_amounts(clause))
+
+
 @dataclass
 class Ledger:
     refunds: list = field(default_factory=list)
@@ -71,14 +100,46 @@ class SecureToolbox:
     ledger: Ledger = field(default_factory=Ledger)
     raw_calls: list = field(default_factory=list)  # unredacted, kept in memory only for leak checks
     request: str | None = None  # set when the release binds write actions to the user's request
+    write_checks: bool = False  # write-checks-v1: findings F-007, F-008
+    _read_this_step: set = field(default_factory=set)
+
+    def begin_step(self) -> None:
+        """Called by the agent before the tool calls of each model reply."""
+        self._read_this_step = set()
+
+    def _write_check(self, name: str, arguments: dict) -> str | None:
+        if name not in GROUNDED_TOOLS:
+            return None
+        order_id = str(arguments.get("order_id", "")).strip().upper()
+        if order_id in self._read_this_step:
+            return "decide-after-lookup"  # F-008: the refund was chosen before the status was read
+        if self.request is not None and not grounded_strict(self.request, arguments):
+            return "not-requested-by-user"
+        order = self.orders.get(order_id)
+        try:
+            if order is not None and float(arguments["amount"]) > float(order["montant"]) + 0.005:
+                return "amount-above-order-total"  # F-007
+        except (KeyError, TypeError, ValueError):
+            return "invalid-amount"
+        return None
 
     def call(self, name: str, arguments: dict) -> tuple[str, str, Decision]:
         self.raw_calls.append((name, dict(arguments)))
         decision = authorize(self.policy, self.identity, name, arguments, self.orders, self.clock(),
                              self.approvals, arguments.get("approval_token"))
-        if decision.allowed and self.request is not None and name in GROUNDED_TOOLS                 and not grounded(self.request, arguments):
+        if decision.allowed and self.write_checks:
+            reason = self._write_check(name, arguments)
+            if reason:
+                decision = replace(decision, allowed=False, reason=reason)
+        elif decision.allowed and self.request is not None and name in GROUNDED_TOOLS \
+                and not grounded(self.request, arguments):
             decision = replace(decision, allowed=False, reason="not-requested-by-user")
+        if name == "lookup_order_status" and decision.allowed:
+            self._read_this_step.add(str(arguments.get("order_id", "")).strip().upper())
         if not decision.allowed:
+            if decision.reason == "decide-after-lookup":
+                return "denied", ("Refusé : lisez d'abord le résultat de lookup_order_status, puis décidez "
+                                  "du remboursement à l'étape suivante."), decision
             return "denied", f"Refusé par la politique : {decision.reason}.", decision
         if name == "lookup_order_status":
             order = self.orders.get(str(arguments.get("order_id", "")).strip().upper())
