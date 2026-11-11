@@ -4,7 +4,7 @@ Mis à jour le 2026-11-11 (après-midi). Branche `feat/mission-s24`. Dernier com
 
 Régénérer les manuels : `python tools/pedagogie/build.py` puis `node tools/pedagogie/print.mjs <playwright/index.mjs> [filtre de nom]` (depuis la racine du dépôt ; Playwright est dans `C:/Users/ramia/career-ops/node_modules/playwright/index.mjs`). Pour expliquer un fichier, ajouter `docs/pedagogie/explications/<chemin avec __>.md` avec des sections `## Ldébut-Lfin`.
 
-Guide de la journée du 11 novembre (corpus v3, S10, F-007/F-008, r7, pistes) : `docs/pedagogie/PDF/AxiomEval_Guide_v3_S10_et_Pistes.pdf`, source `docs/pedagogie/sources/AxiomEval_Guide_v3_S10_et_Pistes.md`.
+Guide complet (tout le projet depuis S01, puis corpus v3, S10, F-007/F-008, r7, r8, pistes, exercices) : `docs/pedagogie/PDF/AxiomEval_Guide_v3_S10_et_Pistes.pdf`, source `docs/pedagogie/sources/AxiomEval_Guide_v3_S10_et_Pistes.md`.
 
 Explications de code : chaque fichier de `docs/pedagogie/explications/` porte l'empreinte SHA-256 de sa source ; `tests/test_pedagogie_explications.py` échoue quand la source change ou qu'une plage sort du fichier. Après relecture et correction des plages, afficher les nouvelles empreintes avec `python tests/test_pedagogie_explications.py --print`. Volumes de code régénérés au commit `c821bf0`.
 
@@ -54,12 +54,13 @@ S9 sur v2 : `ml-baselines --runs data/runs/v2/*.jsonl --out reports/s09/v2_basel
 - **Collecte v3 terminée** : r1, r6, r7 (3 × 1 470, `data/MANIFEST_V3.json`). Aucune exécution à 3 appels (`docs/experiments/V3_TRAJECTOIRES.md`).
 - **S10 faite** (`fcb2b49`, `docs/experiments/S10_SEQUENCES_V3.md`) : GRU meilleur Brier que l'agrégat à l'horizon 2, mais l'ordre mélangé donne le même gain ; H-S10 non soutenue. Relancer : `ml-sequence --runs data/runs/v3/r1-baseline.jsonl data/runs/v3/r6-bound.jsonl --out reports/s10/v3_sequence.json` (environ 20 min sur CPU).
 - **F-007/F-008** : release r7 (`write-checks-v1`, `a6910c0`) ; brèches 40 → 6, remboursements conditionnels légitimes 18/36 → 0/36 ; r6 → r7 REJECT (`docs/security/FINDINGS.md`).
+- **r8a / r8b** (`f17a59b`) : lecture préalable obligatoire / refus guidés, testés en rejeu. **Collecte réelle arrêtée à la demande du propriétaire** : `data/runs/v3/r8a-read-first.jsonl` a 555/1 470 lignes valides ; r8b non commencée. Reprendre avec la même commande `collect` (les clés de tirage sautent l'existant), puis `tools/data/family_table.py`.
 
 ## Prochaines actions, dans l'ordre
 
 1. Revue humaine des 119 tentatives bloquées de r6 (condition du HOLD), puis plus de groupes pour démontrer la non-infériorité (~520).
 2. Calibration (S15 partielle) et conservation des prédictions pour un bootstrap apparié des différences entre modèles.
-3. F-008 résiduel : mesurer « lecture dans un pas antérieur obligatoire » ou un message de refus qui invite à redemander (release r8), en surveillant les remboursements conditionnels légitimes.
+3. F-008 résiduel : finir la collecte de r8a et r8b, comparer à r7 avec `tools/data/family_table.py`, en surveillant les remboursements conditionnels légitimes (18/36 en r6, 0/36 en r7).
 4. Transformer compact (S11), ablations S12 (événements retrieval/outil, capacité égalisée, courbes d'apprentissage), gate G12.
 5. Transfert (§9) vers un second agent ou domaine ; non commencé.
 6. S13–S24 selon `docs/audit/AUDIT_INITIAL_S24.md`.
