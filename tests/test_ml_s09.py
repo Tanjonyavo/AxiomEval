@@ -91,6 +91,18 @@ class ProtocolTests(unittest.TestCase):
         self.assertGreater(models["logistic_regression"]["pr_auc"], models["majority"]["pr_auc"])
         self.assertLess(models["rule_first_step"]["brier"], models["majority"]["brier"])
 
+    def test_document_features_come_from_training_data(self):
+        """prefix-features-v2: any retrieved document becomes a feature; names unseen in train are dropped."""
+        def with_docs(group, docs):
+            r = record(group, "SUCCESS")
+            r["trace"][1]["data"]["documents"] = docs
+            return to_example(r)
+        feat = Featurizer(use_text=False).fit([with_docs("g1", ["garanties"]), with_docs("g2", ["magasins"])])
+        names = feat.dict.get_feature_names_out().tolist()
+        self.assertIn("doc:garanties", names)
+        self.assertNotIn("doc:inconnu", names)
+        self.assertEqual(feat.transform([with_docs("g3", ["inconnu"])]).shape[1], len(feat.dict.get_feature_names_out()))
+
     def test_family_split_holds_out_whole_families(self):
         examples = [to_example(record(f"fam{f}-{g:02d}", "SUCCESS", partition=p))
                     for f in range(8) for g in range(3) for p in ("train", "test", "calibration")]
