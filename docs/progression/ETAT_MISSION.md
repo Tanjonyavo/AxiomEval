@@ -2,7 +2,11 @@
 
 Mis à jour le 2026-11-11 (après-midi). Branche `feat/mission-s24`. Dernier commit de fond : `9f0d0bc` (retest r7). Rien n'est poussé. Bilan : `docs/progression/RAPPORT_FINAL_S24.md`.
 
-Régénérer les manuels : `python tools/pedagogie/build.py` puis `node tools/pedagogie/print.mjs <playwright/index.mjs>` (depuis la racine du dépôt). Pour expliquer un fichier, ajouter `docs/pedagogie/explications/<chemin avec __>.md` avec des sections `## Ldébut-Lfin`.
+Régénérer les manuels : `python tools/pedagogie/build.py` puis `node tools/pedagogie/print.mjs <playwright/index.mjs> [filtre de nom]` (depuis la racine du dépôt ; Playwright est dans `C:/Users/ramia/career-ops/node_modules/playwright/index.mjs`). Pour expliquer un fichier, ajouter `docs/pedagogie/explications/<chemin avec __>.md` avec des sections `## Ldébut-Lfin`.
+
+Guide de la journée du 11 novembre (corpus v3, S10, F-007/F-008, r7, pistes) : `docs/pedagogie/PDF/AxiomEval_Guide_v3_S10_et_Pistes.pdf`, source `docs/pedagogie/sources/AxiomEval_Guide_v3_S10_et_Pistes.md`.
+
+**Attention : `build.py` échoue aujourd'hui** (`IndexError`) : les explications de `security/egress.py` (fichier passé de 70 à 53 lignes) et de `stats/paired.py` (lignes ajoutées) sont périmées. Le guide a été rendu seul, sans relancer les volumes de code. Réécrire ces plages avant de régénérer les volumes.
 
 ## Dernier module réellement terminé
 
