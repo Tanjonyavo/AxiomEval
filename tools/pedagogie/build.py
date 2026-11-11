@@ -145,7 +145,10 @@ td.src pre { margin: 0; white-space: pre-wrap; word-break: break-all; font-famil
 .expl .range { font-weight: bold; color: #1f4e79; margin: 2px 0; } .intro { background: #fbfaf5; border: 1px solid #e6dfc8; padding: 6px 10px; }
 table { border-collapse: collapse; } th, td { border: 1px solid #c9d3de; padding: 3px 6px; font-size: 9.5pt; } th { background: #eef2f7; }
 code { font-family: Consolas, monospace; font-size: 9pt; } pre { white-space: pre-wrap; }
-.toc a { text-decoration: none; color: #1d2433; } .warn { border-left: 4px solid #b45309; background: #fdf6ec; padding: 6px 10px; }
+.toc a { text-decoration: none; color: #1d2433; }
+.part { break-before: page; } .partlabel { color: #4a5568; font-size: 9pt; text-transform: uppercase; letter-spacing: 0.5px; }
+.partnote { border-left: 4px solid #b45309; background: #fdf6ec; padding: 6px 10px; }
+.alltoc, .alltoc ol { list-style: none; } .alltoc > li { margin-top: 6px; } .alltoc ol { font-size: 9.5pt; } .warn { border-left: 4px solid #b45309; background: #fdf6ec; padding: 6px 10px; }
 """ + HtmlFormatter().get_style_defs(".src")
 
 KATEX = ('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">'
@@ -177,7 +180,7 @@ def page(title: str, body: str) -> str:
 def build() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     commit = head()
-    all_stats, rendered = [], {}
+    all_stats, rendered, volumes, sources = [], {}, {}, {}
     for path in files():
         section, stats = render_file(path, commit)
         all_stats.append(stats)
@@ -190,10 +193,83 @@ def build() -> None:
                 f'<h2>Fichiers</h2><ol class="toc">{toc}</ol>' + "".join(s for _, s in chosen))
         (OUT / f"AxiomEval_Code_Explique_Volume_{number}.html").write_text(page(f"Code expliqué {number}", body),
                                                                            encoding="utf-8")
+        volumes[number] = body
     write_index(all_stats, commit)
     for src in sorted((PED / "sources").glob("*.md")):
         body = md(src.read_text(encoding="utf-8"))
+        sources[src.stem] = body
         (OUT / (src.stem + ".html")).write_text(page(src.stem, body), encoding="utf-8")
+    write_all_in_one(sources, volumes, commit)
+
+
+# Reading order of the single PDF. Each entry: (key, title, note). A source written before later work
+# says so in its note, so an old "not implemented" is never read as the current state.
+OLD = ("Rédigé le {date} (commit <code>{sha}</code>), avant le corpus v3, S10 et les releases r7–r8. Là où il dit "
+       "S10 « non implémentée » ou S09 « partielle », c'est dépassé : l'état actuel est dans la partie 1 "
+       "(guide complet) et dans <code>docs/progression/ETAT_MISSION.md</code>.")
+ALL_IN_ONE = [
+    ("AxiomEval_Guide_v3_S10_et_Pistes", "Guide complet de compréhension",
+     "À lire en premier. Version la plus récente ({date}, commit <code>{sha}</code>) : tout le projet, puis le "
+     "corpus v3, S10, r7, r8, les pistes pour continuer et les exercices."),
+    ("AxiomEval_Manuel_Integral_S01_S26", "Manuel intégral S01–S26", OLD),
+    ("AxiomEval_Mathematiques_IA_S01_S26", "Mathématiques de l'IA", OLD),
+    ("AxiomEval_Exercices_Corriges_S01_S26", "Exercices corrigés S04–S09", OLD),
+    ("AxiomEval_Preparation_Entrevues_IA", "Préparation aux entrevues", OLD),
+    ("PARCOURS_MAITRISE_PERSONNEL", "Parcours de maîtrise", OLD),
+    ("01", "Code expliqué — volume 01", None),
+    ("02", "Code expliqué — volume 02", None),
+    ("03", "Code expliqué — volume 03", None),
+    ("INDEX_CODE_EXPLIQUE", "Index de couverture du code expliqué",
+     "Mesuré par <code>tools/pedagogie/build.py</code> au même commit que les parties 7 à 9."),
+]
+
+
+def last_change(path: Path) -> tuple[str, str]:
+    out = subprocess.run(["git", "log", "-1", "--format=%h %ad", "--date=short", "--", str(path)], cwd=ROOT,
+                         capture_output=True, text=True).stdout.split()
+    return (out[0], out[1]) if len(out) == 2 else ("non committé", "non daté")
+
+
+def prefixed(body: str, prefix: str) -> str:
+    """Make ids unique across parts: two documents may both have a heading called « Glossaire »."""
+    body = re.sub(r'\bid="([^"]+)"', lambda m: f'id="{prefix}-{m.group(1)}"', body)
+    return re.sub(r'href="#([^"]+)"', lambda m: f'href="#{prefix}-{m.group(1)}"', body)
+
+
+def headings(body: str, level: int) -> list[tuple[str, str]]:
+    pattern = rf'<h{level} id="([^"]+)">(.*?)</h{level}>'
+    return [(i, re.sub(r"<[^>]+>", "", t)) for i, t in re.findall(pattern, body, flags=re.S)]
+
+
+def write_all_in_one(sources: dict, volumes: dict, commit: str) -> None:
+    parts, toc = [], []
+    for n, (key, title, note) in enumerate(ALL_IN_ONE, 1):
+        prefix = f"p{n}"
+        if key in volumes:
+            body = prefixed(volumes[key], prefix)
+            subs = [(i, t) for i, t in re.findall(r'<section class="file" id="([^"]+)"><h2>(.*?)</h2>', body)]
+        else:
+            path = PED / "sources" / f"{key}.md"
+            path = path if path.exists() else PED / f"{key}.md"
+            body = prefixed(sources.get(key) or md(path.read_text(encoding="utf-8")), prefix)
+            subs = headings(body, 2)
+            sha, date = last_change(path)
+            note = note.format(sha=sha, date=date)
+        banner = f'<p class="partnote">{note}</p>' if note else ""
+        parts.append(f'<section class="part" id="{prefix}"><p class="partlabel">Partie {n} — '
+                     f'{html.escape(title)}</p>{banner}{body}</section>')
+        items = "".join(f'<li><a href="#{i}">{t}</a></li>' for i, t in subs)
+        toc.append(f'<li><a href="#{prefix}"><b>Partie {n} — {html.escape(title)}</b></a><ol>{items}</ol></li>')
+    cover = (f'<h1>AxiomEval — tout en un</h1><p>Tous les documents pédagogiques du dépôt dans un seul fichier. '
+             f'Code exact au commit <code>{commit}</code>. Chaque ligne du sommaire est un lien vers sa page.</p>'
+             '<div class="warn"><p><b>Ordre de lecture conseillé.</b> Partie 1 d\'abord : elle explique tout le '
+             'projet et donne l\'état actuel. Parties 2 à 6 : manuels plus anciens, gardés tels quels, '
+             'chacun avec sa date ; quand ils contredisent la partie 1, la partie 1 a raison. Parties 7 à 9 : le '
+             'code ligne à ligne, à consulter quand un passage renvoie à un fichier ; partie 10 : '
+             'quelles lignes sont expliquées.</p></div>'
+             f'<h2>Sommaire</h2><ol class="toc alltoc">{"".join(toc)}</ol>')
+    (OUT / "AxiomEval_Tout_En_Un.html").write_text(page("AxiomEval — tout en un", cover + "".join(parts)),
+                                                   encoding="utf-8")
 
 
 def write_index(stats: list[dict], commit: str) -> None:

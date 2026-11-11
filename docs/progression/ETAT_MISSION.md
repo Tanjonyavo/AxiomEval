@@ -4,9 +4,11 @@ Mis à jour le 2026-11-11 (après-midi). Branche `feat/mission-s24`. Dernier com
 
 Régénérer les manuels : `python tools/pedagogie/build.py` puis `node tools/pedagogie/print.mjs <playwright/index.mjs> [filtre de nom]` (depuis la racine du dépôt ; Playwright est dans `C:/Users/ramia/career-ops/node_modules/playwright/index.mjs`). Pour expliquer un fichier, ajouter `docs/pedagogie/explications/<chemin avec __>.md` avec des sections `## Ldébut-Lfin`.
 
-Guide complet (tout le projet depuis S01, puis corpus v3, S10, F-007/F-008, r7, r8, pistes, exercices) : `docs/pedagogie/PDF/AxiomEval_Guide_v3_S10_et_Pistes.pdf`, source `docs/pedagogie/sources/AxiomEval_Guide_v3_S10_et_Pistes.md`.
+**Tout en un** (tous les documents pédagogiques et le code expliqué dans un seul PDF, guide complet en partie 1) : `docs/pedagogie/PDF/AxiomEval_Tout_En_Un.pdf`, produit par `build.py` puis `print.mjs <playwright> Tout`.
 
-Explications de code : chaque fichier de `docs/pedagogie/explications/` porte l'empreinte SHA-256 de sa source ; `tests/test_pedagogie_explications.py` échoue quand la source change ou qu'une plage sort du fichier. Après relecture et correction des plages, afficher les nouvelles empreintes avec `python tests/test_pedagogie_explications.py --print`. Volumes de code régénérés au commit `c821bf0`.
+Guide complet seul (tout le projet depuis S01, puis corpus v3, S10, F-007/F-008, r7, r8, pistes, exercices) : `docs/pedagogie/PDF/AxiomEval_Guide_v3_S10_et_Pistes.pdf`, source `docs/pedagogie/sources/AxiomEval_Guide_v3_S10_et_Pistes.md`.
+
+Explications de code : chaque fichier de `docs/pedagogie/explications/` porte l'empreinte SHA-256 de sa source ; `tests/test_pedagogie_explications.py` échoue quand la source change ou qu'une plage sort du fichier. Après relecture et correction des plages, afficher les nouvelles empreintes avec `python tests/test_pedagogie_explications.py --print`. Volumes de code, index et PDF tout en un régénérés sur le code du commit `ebcd66f`.
 
 ## Dernier module réellement terminé
 
