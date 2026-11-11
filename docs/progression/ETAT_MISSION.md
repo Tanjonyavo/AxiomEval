@@ -1,6 +1,6 @@
 # État de la mission — point de reprise
 
-Mis à jour le 2026-11-11 (01:10 UTC). Branche `feat/mission-s24`. Corpus v2 et S9 refaite : commits `5ec1646` à ceux du 2026-11-11. Rien n'est poussé. Bilan : `docs/progression/RAPPORT_FINAL_S24.md`.
+Mis à jour le 2026-11-11 (01:10 UTC). Branche `feat/mission-s24`. Corpus v2 et S9 refaite : commits `5ec1646` à `60f8d37`. Rien n'est poussé. Bilan : `docs/progression/RAPPORT_FINAL_S24.md`.
 
 Régénérer les manuels : `python tools/pedagogie/build.py` puis `node tools/pedagogie/print.mjs <playwright/index.mjs>` (depuis la racine du dépôt). Pour expliquer un fichier, ajouter `docs/pedagogie/explications/<chemin avec __>.md` avec des sections `## Ldébut-Lfin`.
 
