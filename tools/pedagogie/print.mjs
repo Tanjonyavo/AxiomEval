@@ -1,5 +1,6 @@
 // Print every HTML file of docs/pedagogie/build to PDF with Chromium (Playwright).
-// Usage: node tools/pedagogie/print.mjs <path-to-playwright-index.mjs>
+// Usage: node tools/pedagogie/print.mjs <path-to-playwright-index.mjs> [name-filter]
+// With a filter, only the HTML files whose name contains it are printed.
 import { readdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -8,7 +9,8 @@ const playwright = await import(pathToFileURL(process.argv[2]).href);
 const build = resolve('docs/pedagogie/build');
 const out = resolve('docs/pedagogie/PDF');
 const browser = await playwright.chromium.launch();
-for (const name of readdirSync(build).filter((f) => f.endsWith('.html'))) {
+const only = process.argv[3] || '';
+for (const name of readdirSync(build).filter((f) => f.endsWith('.html') && f.includes(only))) {
   const page = await browser.newPage();
   await page.goto(pathToFileURL(join(build, name)).href, { waitUntil: 'networkidle' });
   await page.waitForTimeout(500);
