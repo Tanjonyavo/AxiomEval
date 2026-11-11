@@ -139,6 +139,8 @@ def release_verdict(baseline: list[dict], candidate: list[dict], protocol: Proto
         reasons.append("different-evaluator-versions")
     if len({r.get("corpus_digest") for r in baseline + candidate}) > 1:
         reasons.append("different-corpus-versions")  # same group ids, different scenarios
+    if len({r.get("environment_digest") for r in baseline + candidate}) > 1:
+        reasons.append("different-environments")  # documents, orders or policy changed
     if reasons:
         return ReleaseVerdict(Verdict.INCOMPLETE, tuple(reasons), None, security)
     paired = paired_comparison(baseline, candidate, protocol)
