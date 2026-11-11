@@ -18,6 +18,11 @@ Les semaines S04–S06 de la spécification 32 semaines n'étaient pas réalisé
 
 | S07 | `1e4fbd6` | Data card du corpus de régression sécurité | — | 7 groupes, 21 scénarios | — |
 | Pédagogie | `9ac6dbd` | Générateur de manuels, volumes de code expliqué, manuel, maths, exercices, entrevues (PDF inspectés) | 121 OK | Couverture ligne par ligne 399 / 4 371 lignes significatives (9,1 %) | 4 fichiers expliqués à 100 % seulement |
+| P03 (corpus v2) | `5ec1646`, `2aac570` | Corpus v2 : 63 familles, 180 groupes, 540 scénarios, 46 commandes, 10 nouveaux documents dont un piégé ; provenance du corpus dans chaque enregistrement ; verdict INCOMPLETE si corpus différents | `tests/test_corpus_v2.py` (8) | Partitions : train 98, validation 28, calibration 26, test 28 groupes | `2aac570` corrige une date de gel des labels placée dans le futur (la collecte refusait tout, comme prévu) |
+| S09 | `979d1a0` | Évaluation par familles tenues à l'écart ; outil de manifeste des données | `tests/test_ml_s09.py` (10) | — | — |
+| S07 | `d96dac9` | Correctif F-006 : caviardage des variantes de canari (espacées, casse, inversées, base64, hexadécimal) | test de régression F-006 | 1 enregistrement sur 4 320 touché avant correctif | L'enregistrement existant n'est pas réécrit (chaîne de hachage) |
+| S05/S07 | `dcda87b` | 4 320 exécutions réelles sur v2, comparaisons, rapport de sécurité, findings F-003 à F-006 | — | 4 comparaisons REJECT ; r4 bloque tous les canaris mais divulgue un courriel interne | Comparaisons appariées en diagnostic seulement |
+| S04 | `079852d` | Empreinte de l'environnement (documents, commandes, politique) dans chaque enregistrement ; verdict INCOMPLETE si environnements différents | `tests/test_corpus_v2.py` | — | Les exécutions v2 précèdent ce champ |
 
 Rapport de fin de mission : `docs/progression/RAPPORT_FINAL_S24.md`.
 
