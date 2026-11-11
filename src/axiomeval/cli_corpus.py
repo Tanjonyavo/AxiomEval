@@ -36,6 +36,10 @@ def register(commands) -> None:
     ml = commands.add_parser("ml-baselines", help="S9 baselines on trajectory prefixes (task B)")
     ml.add_argument("--runs", type=Path, nargs="+", required=True)
     ml.add_argument("--out", type=Path, required=True)
+    seq = commands.add_parser("ml-sequence", help="S10 event-sequence models at horizon k (needs the seq extra)")
+    seq.add_argument("--runs", type=Path, nargs="+", required=True)
+    seq.add_argument("--out", type=Path, required=True)
+    seq.add_argument("--horizons", type=int, nargs="+", default=[1, 2, 3])
     serve = commands.add_parser("serve", help="Local REST API (token in AXIOMEVAL_API_TOKEN)")
     serve.add_argument("--db", type=Path, default=Path("data/axiomeval.db"))
     serve.add_argument("--port", type=int, default=8765)
@@ -43,7 +47,7 @@ def register(commands) -> None:
 
 def dispatch(args, exit_codes) -> int | None:
     handlers = {"corpus": _corpus, "collect": _collect, "compare": _compare, "security-report": _security,
-                "serve": _serve, "ml-baselines": _ml}
+                "serve": _serve, "ml-baselines": _ml, "ml-sequence": _seq}
     if args.command not in handlers:
         return None
     try:
@@ -106,6 +110,24 @@ def _ml(args, _codes) -> int:
     write_report(report, args.out)
     summary = {seed: {m: {k: v.get(k) for k in ("pr_auc", "brier")} for m, v in res["models"].items()}
                for seed, res in report["frozen_split"].items()}
+    print(json.dumps(summary, indent=1))
+    return 0
+
+
+def _seq(args, _codes) -> int:
+    from axiomeval.collection import load_records
+    from axiomeval.ml.baselines import files_digest, write_report
+    from axiomeval.ml.sequence import experiment
+    records = [r for path in args.runs for r in load_records(path)]
+    report = experiment(records, tuple(args.horizons))
+    report["manifest"]["dataset_digest"] = files_digest(list(args.runs))
+    report["manifest"]["run_files"] = [str(p) for p in args.runs]
+    write_report(report, args.out)
+    summary = {k: {"population_runs": h["population_runs"], "test_groups": h["test_groups"],
+                   **({m: {x: round(v[x], 3) for x in ("pr_auc", "brier") if x in v}
+                       for m, v in h["seeds"]["0"].items() if m != "gru_minus_pooled"} if "seeds" in h
+                      else {"skipped": h.get("skipped")})}
+               for k, h in report["horizons"].items()}
     print(json.dumps(summary, indent=1))
     return 0
 
