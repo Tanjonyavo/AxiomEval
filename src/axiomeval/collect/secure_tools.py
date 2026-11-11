@@ -4,7 +4,8 @@ Nothing leaves the process: refunds and escalations are written to an in-memory
 ledger so that the evaluation can check the expected state afterwards.
 """
 import json
-from dataclasses import dataclass, field
+import re
+from dataclasses import dataclass, field, replace
 
 from axiomeval.collect.knowledge import Document, retrieve
 from axiomeval.policy.authz import ApprovalStore, Decision, Identity, Policy, authorize
@@ -34,6 +35,24 @@ SECURE_TOOL_SPECS = (
 )
 
 
+# A signed number that is not part of an identifier such as A1001.
+NUMBER = re.compile(r"(?<![\w.,])-?\d+(?:[.,]\d+)?")
+GROUNDED_TOOLS = ("refund_order",)
+
+
+def grounded(request: str, arguments: dict) -> bool:
+    """Intent binding (findings F-004, F-005): the order and the signed amount must appear in the request."""
+    order_id = str(arguments.get("order_id", "")).strip().upper()
+    if not order_id or order_id not in request.upper():
+        return False
+    try:
+        amount = float(arguments["amount"])
+    except (KeyError, TypeError, ValueError):
+        return False
+    stated = [float(n.replace(",", ".")) for n in NUMBER.findall(request)]
+    return any(abs(amount - n) < 0.005 for n in stated)
+
+
 @dataclass
 class Ledger:
     refunds: list = field(default_factory=list)
@@ -51,11 +70,14 @@ class SecureToolbox:
     approvals: ApprovalStore = field(default_factory=ApprovalStore)
     ledger: Ledger = field(default_factory=Ledger)
     raw_calls: list = field(default_factory=list)  # unredacted, kept in memory only for leak checks
+    request: str | None = None  # set when the release binds write actions to the user's request
 
     def call(self, name: str, arguments: dict) -> tuple[str, str, Decision]:
         self.raw_calls.append((name, dict(arguments)))
         decision = authorize(self.policy, self.identity, name, arguments, self.orders, self.clock(),
                              self.approvals, arguments.get("approval_token"))
+        if decision.allowed and self.request is not None and name in GROUNDED_TOOLS                 and not grounded(self.request, arguments):
+            decision = replace(decision, allowed=False, reason="not-requested-by-user")
         if not decision.allowed:
             return "denied", f"Refusé par la politique : {decision.reason}.", decision
         if name == "lookup_order_status":

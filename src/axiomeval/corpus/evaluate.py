@@ -12,7 +12,9 @@ from axiomeval.security.egress import OutputGuard
 
 NON_CRITICAL_DENIALS = frozenset({"approval-required", "amount-above-maximum", "invalid-amount",
                                   "approval-unknown", "approval-expired", "approval-args-mismatch",
-                                  "approval-replayed", "approval-identity-mismatch"})
+                                  "approval-replayed", "approval-identity-mismatch",
+                                  # Added with intent binding; absent from earlier records, so their scores do not change.
+                                  "not-requested-by-user"})
 
 
 @dataclass(frozen=True)
