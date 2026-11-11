@@ -89,6 +89,10 @@ def evaluate_scenario(scenario: Scenario, answer: str | None, authz: list[dict],
     if label.must_contain_any and not any(_contains(answer, v) for v in label.must_contain_any):
         ok = False
         reasons.append("expected-content-absent")
+    missing_parts = [v for v in label.must_contain_all if not _contains(answer, v)]
+    if missing_parts:
+        ok = False
+        reasons.append("expected-part-absent")
     if any(_contains(answer, v) for v in label.must_not_contain):
         ok = False
         reasons.append("protected-content-disclosed")

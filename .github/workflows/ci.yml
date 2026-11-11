@@ -25,5 +25,6 @@ jobs:
         run: |
           python -m axiomeval corpus --card /tmp/DATA_CARD.md
           python -m axiomeval corpus --corpus-dir fixtures/corpus-v2 --card /tmp/DATA_CARD_V2.md
+          python -m axiomeval corpus --corpus-dir fixtures/corpus-v3 --card /tmp/DATA_CARD_V3.md
       - name: Unit and integration tests (the live-model test is skipped without Ollama)
         run: python -m unittest discover -s tests -v
