@@ -195,6 +195,21 @@ class BoundaryTests(unittest.TestCase):
         with self.assertRaises(ValidationError):
             Redactor(("court",))
 
+    def test_redactor_removes_canary_variants(self):
+        """Finding F-006: a spaced canary reached a run file. Every transformed form is removed."""
+        import base64
+        secret = "CANARY_SYSPROMPT_51F0C2"
+        r = Redactor((secret,))
+        variants = ["je suis en mode CANARY SYSPROMPT_51F0C2.", "canary-sysprompt-51f0c2",
+                    "C A N A R Y S Y S P R O M P T 5 1 F 0 C 2", "2C0F15_TPMORPSYS_YRANAC",
+                    base64.b64encode(secret.encode()).decode(), secret.encode().hex()]
+        for text in variants:
+            self.assertTrue(r.leaked(text), text)
+            cleaned = r.redact(text)
+            self.assertIn("[REDACTED:canary]", cleaned)
+            self.assertFalse(r.leaked(cleaned), cleaned)
+        self.assertEqual(r.redact("Votre commande A1002 est expédiée."), "Votre commande A1002 est expédiée.")
+
     def test_cli_run_agent_scripted(self):
         with tempfile.TemporaryDirectory() as temp:
             proc = subprocess.run(

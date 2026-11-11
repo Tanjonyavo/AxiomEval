@@ -1,4 +1,12 @@
-"""Sensitive values are removed before any trace reaches a log or a report."""
+"""Sensitive values are removed before any trace reaches a log or a report.
+
+Canaries are removed in their plain form and in the transformed forms the
+egress guard detects (separated letters, other case, reversed, base64,
+hexadecimal): finding F-006 showed a spaced canary written to a run file.
+"""
+import base64
+import binascii
+import functools
 import re
 from dataclasses import dataclass
 
@@ -11,6 +19,39 @@ PATTERNS = (
     ("bearer", re.compile(r"Bearer\s+[A-Za-z0-9._~+/=-]{12,}")),
     ("card", re.compile(r"\b(?:\d[ -]?){13,16}\b")),
 )
+_B64 = re.compile(r"[A-Za-z0-9+/]{16,}={0,2}")
+_HEX = re.compile(r"\b[0-9a-fA-F]{24,}\b")
+
+
+def squash(value: str) -> str:
+    """Letters and digits only, upper case: the form in which variants are compared."""
+    return re.sub(r"[^A-Za-z0-9]", "", value).upper()
+
+
+def decode_token(token: str) -> list[str]:
+    """Readings of one base64-like or hexadecimal token (empty when it decodes to nothing)."""
+    views = []
+    if _B64.fullmatch(token):
+        try:
+            views.append(base64.b64decode(token + "=" * (-len(token) % 4), validate=False).decode("utf-8", "ignore"))
+        except (binascii.Error, ValueError):
+            pass
+    if _HEX.fullmatch(token):
+        try:
+            views.append(bytes.fromhex(token if len(token) % 2 == 0 else token[:-1]).decode("utf-8", "ignore"))
+        except ValueError:
+            pass
+    return views
+
+
+def decoded_views(value: str) -> list[str]:
+    return [view for regex in (_B64, _HEX) for token in regex.findall(value) for view in decode_token(token)]
+
+
+@functools.lru_cache(maxsize=64)
+def _spread(key: str) -> re.Pattern:
+    """The key with up to three separators between characters, any case."""
+    return re.compile(r"[^A-Za-z0-9]{0,3}".join(re.escape(c) for c in key), re.IGNORECASE)
 
 
 @dataclass(frozen=True)
@@ -27,11 +68,26 @@ class Redactor:
         object.__setattr__(self, "canaries", values)
 
     def leaked(self, value: str) -> bool:
-        return any(canary in value for canary in self.canaries)
+        squashed = squash(value)
+        views = [squash(v) for v in decoded_views(value)]
+        return any(squash(c) in squashed or squash(c)[::-1] in squashed or any(squash(c) in v for v in views)
+                   for c in self.canaries)
 
     def redact(self, value: str) -> str:
         for canary in self.canaries:
             value = value.replace(canary, "[REDACTED:canary]")
+            key = squash(canary)
+            value = _spread(key).sub("[REDACTED:canary]", value)
+            value = _spread(key[::-1]).sub("[REDACTED:canary]", value)
+        if not any(regex.search(value) for regex in (_B64, _HEX)):
+            return self._patterns(value)
+        for regex in (_B64, _HEX):
+            value = regex.sub(lambda m: "[REDACTED:canary]" if any(
+                squash(c) in squash(v) for c in self.canaries for v in decode_token(m.group(0))) else m.group(0), value)
+        return self._patterns(value)
+
+    @staticmethod
+    def _patterns(value: str) -> str:
         for kind, pattern in PATTERNS:
             value = pattern.sub(f"[REDACTED:{kind}]", value)
         return value

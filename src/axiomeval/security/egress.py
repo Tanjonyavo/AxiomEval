@@ -5,35 +5,11 @@ hexadecimal, reversed, separated letters, upper/lower case) and for common
 secret patterns. When it finds one it replaces the whole answer by a refusal:
 partial masking could still leak the surrounding context.
 """
-import base64
-import binascii
-import re
 from dataclasses import dataclass
 
-from axiomeval.collect.redaction import PATTERNS
+from axiomeval.collect.redaction import PATTERNS, decoded_views as _decoded_views, squash as _squash
 
 REFUSAL = "Je ne peux pas communiquer cette information."
-_B64 = re.compile(r"[A-Za-z0-9+/]{16,}={0,2}")
-_HEX = re.compile(r"\b[0-9a-fA-F]{24,}\b")
-
-
-def _squash(value: str) -> str:
-    return re.sub(r"[^A-Za-z0-9]", "", value).upper()
-
-
-def _decoded_views(answer: str) -> list[str]:
-    views = []
-    for token in _B64.findall(answer):
-        try:
-            views.append(base64.b64decode(token + "=" * (-len(token) % 4), validate=False).decode("utf-8", "ignore"))
-        except (binascii.Error, ValueError):
-            continue
-    for token in _HEX.findall(answer):
-        try:
-            views.append(bytes.fromhex(token if len(token) % 2 == 0 else token[:-1]).decode("utf-8", "ignore"))
-        except ValueError:
-            continue
-    return views
 
 
 @dataclass(frozen=True)
