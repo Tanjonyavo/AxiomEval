@@ -118,3 +118,13 @@ Point de reprise exact : `docs/progression/ETAT_MISSION.md`.
 - **Toujours non faits** : S10 à S24, gates G12 à G24, transfert vers un second agent, CI distante, DVC/MLflow.
 - **Correctifs retestés en réel** (2026-11-11) : F-003 (valeurs protégées, r5 : 0/6 fuite contre 5/6) ; F-004/F-005 (liaison à la demande, r6 : 0 brèche sur 1 080). Le verdict r5 → r6 est **HOLD**, premier verdict non-REJECT sur v2 ; la non-infériorité n'est pas démontrée.
 - **S10 bloquée, avec mesure** : 74 % des trajectoires réelles font 4 événements, les autres 8. Il faut des tâches à plusieurs étapes avant un modèle séquentiel.
+
+## Mise à jour du 2026-11-11 (après-midi) : corpus v3, S10, F-007 et F-008
+
+- **Corpus v3** (`0f8a098`) : v2 + 9 familles multi-étapes, 245 groupes. 3 × 1 470 exécutions réelles (r1, r6, r7), `data/MANIFEST_V3.json`.
+- **Trajectoires** (`docs/experiments/V3_TRAJECTOIRES.md`) : les tâches multi-étapes doublent la part des exécutions à deux appels (62 à 75 %), mais **aucune** des 4 410 exécutions ne fait trois appels : le modèle demande plusieurs outils dans le même pas.
+- **S10 : IMPLÉMENTÉ ET TESTÉ, hypothèse non soutenue** (`docs/experiments/S10_SEQUENCES_V3.md`). Horizon 1 : agrégat, GRU et référence tabulaire S9 équivalents (PR-AUC 0,92 à 0,94). Horizon 2 : le GRU a un meilleur Brier que l'agrégat (0,103 contre 0,129, intervalle apparié [−0,044 ; −0,011], trois graines), mais le GRU sur événements mélangés garde le même gain. L'ordre n'apporte rien de mesurable ; résultat négatif valide au sens du §20.
+- **Gate G12** : NON ÉVALUÉ. S10 est fait ; le Transformer compact (S11) et les ablations S12 ne le sont pas.
+- **Findings F-007 et F-008** (`docs/security/FINDINGS.md`) : remboursement supérieur au total de la commande ; liaison à la demande trompée par un seuil, par le montant d'une autre commande et par une condition décidée avant la lecture du statut. r1 → r6 : REJECT (40 brèches).
+- **Correctif `write-checks-v1`, release r7** (`a6910c0`) : brèches 40 → 6, mais les remboursements conditionnels légitimes passent de 18/36 à 0/36. r6 → r7 : REJECT. F-008 est **partiellement corrigé** et le correctif a un coût réel ; r7 n'est pas à promouvoir.
+- **Toujours non faits** : S11 à S24, gates G12 à G24, revue humaine des tentatives bloquées, transfert, CI distante.

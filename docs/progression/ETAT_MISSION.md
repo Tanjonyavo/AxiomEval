@@ -1,19 +1,19 @@
 # État de la mission — point de reprise
 
-Mis à jour le 2026-11-11 (10:00 UTC). Branche `feat/mission-s24`. Corpus v2 et S9 refaite : commits `5ec1646` à `60f8d37`. Rien n'est poussé. Bilan : `docs/progression/RAPPORT_FINAL_S24.md`.
+Mis à jour le 2026-11-11 (après-midi). Branche `feat/mission-s24`. Dernier commit de fond : `9f0d0bc` (retest r7). Rien n'est poussé. Bilan : `docs/progression/RAPPORT_FINAL_S24.md`.
 
 Régénérer les manuels : `python tools/pedagogie/build.py` puis `node tools/pedagogie/print.mjs <playwright/index.mjs>` (depuis la racine du dépôt). Pour expliquer un fichier, ajouter `docs/pedagogie/explications/<chemin avec __>.md` avec des sections `## Ldébut-Lfin`.
 
 ## Dernier module réellement terminé
 
-S09 (baselines) **IMPLÉMENTÉ ET TESTÉ** sur le corpus v2 (180 groupes, 4 320 exécutions réelles) : la régression logistique dépasse la majorité avec des intervalles groupés disjoints ; limite de généralisation aux familles inconnues (`docs/experiments/S09_BASELINES_V2.md`).
+S10 (séquences) **IMPLÉMENTÉ ET TESTÉ** sur le corpus v3 ; hypothèse H-S10 non soutenue (`docs/experiments/S10_SEQUENCES_V3.md`). S09 (baselines) **IMPLÉMENTÉ ET TESTÉ** sur le corpus v2 (180 groupes, 4 320 exécutions réelles) : la régression logistique dépasse la majorité avec des intervalles groupés disjoints ; limite de généralisation aux familles inconnues (`docs/experiments/S09_BASELINES_V2.md`).
 
 ## Environnement vérifié
 
 - Python 3.14.5 dans `.venv` ; paquets ajoutés : fastapi 0.162, uvicorn 0.54, httpx 0.28, numpy 2.5, scikit-learn 1.9, scipy 1.18.
 - Ollama 0.40.16 portable dans `%LOCALAPPDATA%\Programs\Ollama` ; modèles `qwen2.5:1.5b-instruct` et `qwen2.5:0.5b-instruct`. Lancer `ollama serve` avant toute collecte.
 - RTX 3060 6 Go ; environ 15 Go de disque libre au début de la mission.
-- 138 tests passent (`python -m unittest discover -s tests`), 1 ignoré sans `AXIOMEVAL_LIVE=1`.
+- 160 tests passent (`python -m unittest discover -s tests`), 1 ignoré sans `AXIOMEVAL_LIVE=1`. Le test GRU exige PyTorch (extra `seq`) ; sans lui il est ignoré.
 
 ## Données réelles (locales, non publiées)
 
@@ -47,19 +47,16 @@ S9 sur v2 : `ml-baselines --runs data/runs/v2/*.jsonl --out reports/s09/v2_basel
 - **F-004/F-005 corrigés** (`9923985`, release `r6-bound`) : 0 brèche sur 1 080 exécutions réelles ; verdict r5 → r6 HOLD, premier verdict non-REJECT sur v2.
 - **S10 bloquée sur v2, avec mesure** : sur 4 320 trajectoires réelles, 797 sur 1 080 par release font un seul appel au modèle (4 événements), les autres deux appels (8 événements). D'où le corpus v3 (`0f8a098`) : v2 + 9 familles multi-étapes (65 groupes), 245 groupes au total.
 - **Code S10 validé par les tests** (`9f3aa96`) : `src/axiomeval/ml/sequence.py`, commande `ml-sequence`, extra `seq` (torch). Un essai de fumée sur v2 r1 + r4 (1 tirage de graines, 50 bootstraps) a seulement vérifié que la chaîne tourne ; ce n'est pas un résultat.
-- **Collecte v3 en cours** : `data/runs/v3/r1-baseline.jsonl` puis `r6-bound.jsonl`, 1 470 exécutions chacune. La collecte reprend où elle s'est arrêtée (clés de tirage) ; relancer la même commande :
-
-```bash
-for r in r1-baseline r6-bound; do .venv/Scripts/python.exe -m axiomeval collect --corpus-dir fixtures/corpus-v3 --release configs/releases/$r.yaml --out data/runs/v3/$r.jsonl --draws 2 || exit 1; done
-```
-
-  Ensuite : `tools/data/manifest.py data/runs/v3 data/MANIFEST_V3.json`, `tools/data/trajectories.py data/runs/v3/*.jsonl --multi <familles v3> --out reports/s10/v3_lengths.json`, `compare` r1 → r6, puis `ml-sequence --runs data/runs/v3/*.jsonl --out reports/s10/v3_sequence.json`.
+- **Collecte v3 terminée** : r1, r6, r7 (3 × 1 470, `data/MANIFEST_V3.json`). Aucune exécution à 3 appels (`docs/experiments/V3_TRAJECTOIRES.md`).
+- **S10 faite** (`fcb2b49`, `docs/experiments/S10_SEQUENCES_V3.md`) : GRU meilleur Brier que l'agrégat à l'horizon 2, mais l'ordre mélangé donne le même gain ; H-S10 non soutenue. Relancer : `ml-sequence --runs data/runs/v3/r1-baseline.jsonl data/runs/v3/r6-bound.jsonl --out reports/s10/v3_sequence.json` (environ 20 min sur CPU).
+- **F-007/F-008** : release r7 (`write-checks-v1`, `a6910c0`) ; brèches 40 → 6, remboursements conditionnels légitimes 18/36 → 0/36 ; r6 → r7 REJECT (`docs/security/FINDINGS.md`).
 
 ## Prochaines actions, dans l'ordre
 
 1. Revue humaine des 119 tentatives bloquées de r6 (condition du HOLD), puis plus de groupes pour démontrer la non-infériorité (~520).
 2. Calibration (S15 partielle) et conservation des prédictions pour un bootstrap apparié des différences entre modèles.
-3. Finir la collecte v3, mesurer les longueurs, lancer S10 (GRU contre agrégat, ablations), puis Transformer compact (S11–S12) et gate G12.
-4. Transfert (§9) vers un second agent ou domaine ; non commencé.
-5. S13–S24 selon `docs/audit/AUDIT_INITIAL_S24.md`.
-6. Manuels pédagogiques : corpus v2, caviardage des variantes, évaluation par familles, valeurs protégées, liaison à la demande.
+3. F-008 résiduel : mesurer « lecture dans un pas antérieur obligatoire » ou un message de refus qui invite à redemander (release r8), en surveillant les remboursements conditionnels légitimes.
+4. Transformer compact (S11), ablations S12 (événements retrieval/outil, capacité égalisée, courbes d'apprentissage), gate G12.
+5. Transfert (§9) vers un second agent ou domaine ; non commencé.
+6. S13–S24 selon `docs/audit/AUDIT_INITIAL_S24.md`.
+7. Manuels pédagogiques : corpus v2, caviardage des variantes, évaluation par familles, valeurs protégées, liaison à la demande.
