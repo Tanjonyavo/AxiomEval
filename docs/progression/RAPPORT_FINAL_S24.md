@@ -74,7 +74,7 @@ Rapports : `docs/security/RAPPORT_SECURITE_CORPUS_REGRESSION.md`, `RAPPORT_SECUR
 
 ## F. Couverture pédagogique
 
-Mesure : `docs/pedagogie/INDEX_CODE_EXPLIQUE.md`, générée par `tools/pedagogie/build.py`.
+Mesure : `docs/pedagogie/INDEX_CODE_EXPLIQUE.md`, générée par `tools/pedagogie/build.py`. Le dossier `docs/pedagogie/` (manuels, guide, code expliqué, PDF) est personnel : il reste en local et n'est pas publié.
 
 - 77 fichiers, 4 371 lignes significatives, **399 expliquées (9,1 %)**.
 - Fichiers expliqués à 100 % : `policy/authz.py`, `stats/paired.py`, `security/egress.py`, `corpus/splits.py`.

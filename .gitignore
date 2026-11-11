@@ -122,6 +122,8 @@ docs/semaine-01/README.md
 docs/semaine-01/pdf/
 docs/semaine-06/guide/
 AxiomEval_S6_Comprendre_pour_entrevues.pdf
+docs/pedagogie/
+/AxiomEval_Tout_En_Un.pdf
 
 # Real trajectories stay local; their digests are versioned in data/MANIFEST.json
 data/runs/

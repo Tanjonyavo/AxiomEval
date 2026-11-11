@@ -25,6 +25,7 @@ def source_sha256(path: Path) -> str:
     return hashlib.sha256(path.read_text(encoding="utf-8").replace("\r\n", "\n").encode("utf-8")).hexdigest()
 
 
+@unittest.skipUnless(EXPL.is_dir(), "the teaching material (docs/pedagogie) is kept local and not published")
 class ExplanationTests(unittest.TestCase):
     def test_every_explanation_matches_its_source(self):
         files = sorted(EXPL.glob("*.md"))

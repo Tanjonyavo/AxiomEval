@@ -4,6 +4,8 @@ Mis à jour le 2026-11-11 (après-midi). Branche `feat/mission-s24`. Dernier com
 
 Régénérer les manuels : `python tools/pedagogie/build.py` puis `node tools/pedagogie/print.mjs <playwright/index.mjs> [filtre de nom]` (depuis la racine du dépôt ; Playwright est dans `C:/Users/ramia/career-ops/node_modules/playwright/index.mjs`). Pour expliquer un fichier, ajouter `docs/pedagogie/explications/<chemin avec __>.md` avec des sections `## Ldébut-Lfin`.
 
+Le dossier `docs/pedagogie/` est personnel : ignoré par git, retiré de l'historique publié le 11/11/2026 ; une sauvegarde locale est dans la branche `backup/avant-suppression-pedagogie`.
+
 **Tout en un** (tous les documents pédagogiques et le code expliqué dans un seul PDF, guide complet en partie 1) : `docs/pedagogie/PDF/AxiomEval_Tout_En_Un.pdf`, produit par `build.py` puis `print.mjs <playwright> Tout`.
 
 Guide complet seul (tout le projet depuis S01, puis corpus v3, S10, F-007/F-008, r7, r8, pistes, exercices) : `docs/pedagogie/PDF/AxiomEval_Guide_v3_S10_et_Pistes.pdf`, source `docs/pedagogie/sources/AxiomEval_Guide_v3_S10_et_Pistes.md`.

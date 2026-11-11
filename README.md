@@ -70,7 +70,7 @@ Run `python -m axiomeval <command> --help` for every option. Exit codes 10, 11 a
 
 ## Documentation
 
-- **Start here:** [`docs/pedagogie/PDF/AxiomEval_Tout_En_Un.pdf`](docs/pedagogie/PDF/AxiomEval_Tout_En_Un.pdf). It gathers the complete guide, the manuals and the code explained line by line, in French.
+- **Start here:** [RESULTATS.md](RESULTATS.md), the protocol and the verifiable numbers.
 - Security: [threat model](docs/security/THREAT_MODEL.md), [findings F-001 to F-008](docs/security/FINDINGS.md).
 - Data cards: [v1](docs/data/DATA_CARD.md), [v2](docs/data/DATA_CARD_V2.md), [v3](docs/data/DATA_CARD_V3.md), [security corpus](docs/data/DATA_CARD_SECURITY.md).
 - Design: [architecture](docs/architecture.md), [decisions](docs/decisions.md).
