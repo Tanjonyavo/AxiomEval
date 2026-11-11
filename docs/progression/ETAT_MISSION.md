@@ -6,7 +6,7 @@ Régénérer les manuels : `python tools/pedagogie/build.py` puis `node tools/pe
 
 Guide de la journée du 11 novembre (corpus v3, S10, F-007/F-008, r7, pistes) : `docs/pedagogie/PDF/AxiomEval_Guide_v3_S10_et_Pistes.pdf`, source `docs/pedagogie/sources/AxiomEval_Guide_v3_S10_et_Pistes.md`.
 
-**Attention : `build.py` échoue aujourd'hui** (`IndexError`) : les explications de `security/egress.py` (fichier passé de 70 à 53 lignes) et de `stats/paired.py` (lignes ajoutées) sont périmées. Le guide a été rendu seul, sans relancer les volumes de code. Réécrire ces plages avant de régénérer les volumes.
+Explications de code : chaque fichier de `docs/pedagogie/explications/` porte l'empreinte SHA-256 de sa source ; `tests/test_pedagogie_explications.py` échoue quand la source change ou qu'une plage sort du fichier. Après relecture et correction des plages, afficher les nouvelles empreintes avec `python tests/test_pedagogie_explications.py --print`. Volumes de code régénérés au commit `c821bf0`.
 
 ## Dernier module réellement terminé
 

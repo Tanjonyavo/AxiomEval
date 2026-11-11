@@ -440,9 +440,9 @@ Tout est mesuré sur une seule boutique fictive et un seul agent. Un deuxième d
 
 ### Piste 10 — Pédagogie
 
-**À faire en premier : réparer les explications périmées.** Le 11 novembre, `python tools/pedagogie/build.py` échoue : `src/axiomeval/security/egress.py` est passé de 70 à 53 lignes (fonctions déplacées dans `collect/redaction.py`), et `src/axiomeval/stats/paired.py` a gagné des lignes (raisons INCOMPLETE). Leurs fichiers d'explication pointent donc vers des lignes qui n'existent plus ou qui ont bougé. Il faut réécrire leurs plages `## Ldébut-Lfin` contre le code actuel. Un test qui vérifie que chaque plage tient dans son fichier éviterait que cela se reproduise.
+**Fait le 11 novembre (`c821bf0`) : explications périmées réparées.** `src/axiomeval/security/egress.py` était passé de 70 à 53 lignes et `src/axiomeval/stats/paired.py` avait gagné 4 lignes : leurs explications pointaient vers de mauvaises lignes. Elles sont réécrites. Chaque fichier d'explication porte maintenant l'empreinte SHA-256 du code qu'il explique, et `tests/test_pedagogie_explications.py` échoue dès que ce code change. Pour mettre à jour une empreinte après avoir relu l'explication : `python tests/test_pedagogie_explications.py --print`.
 
-Ensuite, ajouter aux volumes « Code expliqué » les fichiers de la journée (`ml/sequence.py`, la partie `write-checks` de `collect/secure_tools.py`) : un fichier `docs/pedagogie/explications/<chemin avec __>.md` avec des sections `## Ldébut-Lfin`, puis `python tools/pedagogie/build.py`.
+Prochaine étape : ajouter aux volumes « Code expliqué » les fichiers de la journée (`ml/sequence.py`, la partie `write-checks` de `collect/secure_tools.py`) : un fichier `docs/pedagogie/explications/<chemin avec __>.md` avec des sections `## Ldébut-Lfin`, puis `python tools/pedagogie/build.py`.
 
 ### Règles à garder pour toute piste
 
