@@ -27,7 +27,7 @@ Everything below was measured on real runs of `qwen2.5:1.5b-instruct` through a 
 - **Verdict r6 to r7: `REJECT`.** The new write checks stopped the refund breaches, but they also blocked legitimate conditional refunds (18/36 to 0/36).
 - **Sequence models (S10):** the GRU beats the pooled baseline at horizon 2 (Brier 0.103 vs 0.129). It keeps the same gain when event order is shuffled, so order is not what helps.
 
-The raw runs (`data/runs/`) stay local. Their SHA-256 digests are in `data/MANIFEST*.json`, and the comparison reports are in `reports/`.
+Protocol, definitions and where to check each number: [RESULTATS.md](RESULTATS.md) (in French). The raw runs (`data/runs/`) stay local. Their SHA-256 digests are in `data/MANIFEST*.json`, and the comparison reports are in `reports/`.
 
 ## Installation
 
