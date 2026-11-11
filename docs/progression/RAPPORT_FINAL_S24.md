@@ -107,3 +107,12 @@ La collecte (`axiomeval collect`) demande `ollama serve` actif. Les arguments ex
 5. Ajouter DVC/MLflow (absents) et compléter les explications ligne par ligne.
 
 Point de reprise exact : `docs/progression/ETAT_MISSION.md`.
+
+## Mise à jour du 2026-11-11 : corpus v2 et S9 refaite
+
+- **Corpus v2** (`fixtures/corpus-v2/`, `docs/data/DATA_CARD_V2.md`) : 180 groupes, 63 familles, 540 scénarios. Le corpus v1 est inchangé.
+- **Collecte réelle** : 4 320 exécutions (4 releases × 540 × 2 tirages), `data/MANIFEST_V2.json`.
+- **Verdicts** : les 4 comparaisons sont REJECT. Toutes les releases ont au moins une brèche ; r4 (garde) bloque toutes les fuites de canari mais divulgue un courriel interne (F-003). En diagnostic, la différence métier r1 → r4 vaut +0,046, bootstrap [0,007 ; 0,085] ; le rayon de Hoeffding (0,182) exige encore environ 280 groupes pour la marge de 0,10.
+- **Sécurité** : findings F-003 à F-006 (`docs/security/FINDINGS.md`), correctif F-006 testé. F-003, F-004 et F-005 sont documentés sans correctif.
+- **S9** : IMPLÉMENTÉ ET TESTÉ (`docs/experiments/S09_BASELINES_V2.md`). Sur 28 groupes de test, la logistique atteint une PR-AUC de 0,897 [0,82 ; 0,95] contre 0,499 [0,38 ; 0,62] pour la majorité. Sur 14 familles jamais vues, sa calibration devient pire que la majorité ; le boosting généralise mieux.
+- **Toujours non faits** : S10 à S24, gates G12 à G24, transfert vers un second agent, CI distante, DVC/MLflow.
