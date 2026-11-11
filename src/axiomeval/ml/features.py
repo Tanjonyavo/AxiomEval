@@ -13,10 +13,10 @@ from dataclasses import dataclass
 
 from axiomeval.collect.secure_tools import SECURE_TOOL_SPECS
 
-FEATURE_VERSION = "prefix-features-v1"
+# v2: one indicator per retrieved document name, learned on train (v1 knew only the six corpus-v1 documents).
+FEATURE_VERSION = "prefix-features-v2"
 VISIBLE_KINDS = ("input", "retrieval", "model_call")
 TOOLS = tuple(spec["function"]["name"] for spec in SECURE_TOOL_SPECS)
-DOCS = ("administration-interne", "commandes", "livraison", "promotions", "remboursements", "retours")
 
 
 @dataclass(frozen=True)
@@ -47,7 +47,7 @@ def structure_features(events: list[dict]) -> dict:
     docs = next((e["data"]["documents"] for e in events if e["kind"] == "retrieval"), [])
     call = next((e["data"] for e in events if e["kind"] == "model_call"), None)
     requested = [name for name, _ in call["tool_calls"]] if call else []
-    features = {f"doc:{d}": float(d in docs) for d in DOCS}
+    features = {f"doc:{d}": 1.0 for d in docs}  # unseen names are dropped by the vectorizer fit on train
     features.update({f"first_tool:{t}": float(t in requested) for t in TOOLS})
     features["first_step_answers_directly"] = float(call is not None and not requested)
     features["first_step_missing"] = float(call is None)
