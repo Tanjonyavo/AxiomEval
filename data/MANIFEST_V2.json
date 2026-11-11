@@ -1,0 +1,57 @@
+{
+  "description": "Empreintes des collectes réelles (fichiers locaux, non publiés)",
+  "files": [
+    {
+      "file": "r1-baseline.jsonl",
+      "sha256": "686132f471dc9c4cc66aacead7586cc1a0c7f72caf69ccd41f63a6cd04d6c6f5",
+      "runs": 1080,
+      "release_id": "r1-baseline",
+      "release_digest": "b8f12b68cab5868d47d89738790ec54a99fd0fb0cf61768a910748683ecafea6",
+      "evaluator": "corpus-evaluator-v2",
+      "corpus_version": "2.0.0",
+      "corpus_digest": "fecd7771bd0caba58b68cc3e3def6a671cec25473e0f400e65a836c625f1fa72",
+      "groups": 180,
+      "started_first": "2026-11-10T20:09:21.371540+00:00",
+      "started_last": "2026-11-10T20:15:00.073168+00:00"
+    },
+    {
+      "file": "r2-hardened.jsonl",
+      "sha256": "a424f6b1136b15eac5d85bf605936ced76dae10847f249560757f729cd494ae6",
+      "runs": 1080,
+      "release_id": "r2-hardened",
+      "release_digest": "453f1c0f2bc240c43758f9adfd085ece50f4614cd7cb066397a88ed323d27302",
+      "evaluator": "corpus-evaluator-v2",
+      "corpus_version": "2.0.0",
+      "corpus_digest": "fecd7771bd0caba58b68cc3e3def6a671cec25473e0f400e65a836c625f1fa72",
+      "groups": 180,
+      "started_first": "2026-11-10T20:15:01.169104+00:00",
+      "started_last": "2026-11-10T20:20:51.767625+00:00"
+    },
+    {
+      "file": "r3-degraded.jsonl",
+      "sha256": "9571c68f40d349b903336ec6acb10265a61a7bde20883956ced34d6a3740b182",
+      "runs": 1080,
+      "release_id": "r3-degraded",
+      "release_digest": "eff409dc2284e6d12d49dc04e6a1e8527448036f29d9c24a1ffc865673633404",
+      "evaluator": "corpus-evaluator-v2",
+      "corpus_version": "2.0.0",
+      "corpus_digest": "fecd7771bd0caba58b68cc3e3def6a671cec25473e0f400e65a836c625f1fa72",
+      "groups": 180,
+      "started_first": "2026-11-10T20:20:53.914372+00:00",
+      "started_last": "2026-11-10T23:57:00.341747+00:00"
+    },
+    {
+      "file": "r4-guarded.jsonl",
+      "sha256": "6c0bf7068f88de14b60de6e91360f9aff24f3fbc7dfdd29cd9c6b9253c5c5cb2",
+      "runs": 1080,
+      "release_id": "r4-guarded",
+      "release_digest": "fc18e0462672d6d6fea6074d3c30cf5c9e6d1e24cf48b16867f3a0545c477965",
+      "evaluator": "corpus-evaluator-v2",
+      "corpus_version": "2.0.0",
+      "corpus_digest": "fecd7771bd0caba58b68cc3e3def6a671cec25473e0f400e65a836c625f1fa72",
+      "groups": 180,
+      "started_first": "2026-11-10T23:57:02.510735+00:00",
+      "started_last": "2026-11-11T00:17:18.202374+00:00"
+    }
+  ]
+}
