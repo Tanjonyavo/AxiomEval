@@ -1,4 +1,5 @@
 # src/axiomeval/stats/paired.py
+<!-- source-sha256: b394c661b1734093d9959be647edd05fd512b18aa044ac4d5a5aac05aee27633 -->
 
 **Rôle.** Comparer deux releases sur les mêmes groupes de scénarios et rendre le verdict de release (S5, lot P04, spec §17 et §38). Entrées : deux listes d'enregistrements produits par `collection.py`. Sortie : `ReleaseVerdict`. Appelé par `cli_corpus._compare` et par l'API (`api/app.py`). Testé par `tests/test_corpus_p03_p04.py::StatisticsTests`. Références AXM : 03-C04 (différences appariées), 03-C06 (concentration), 04-C03 (intervalles appariés), 04-C04 (non-infériorité), 04-C05 (bootstrap).
 
@@ -35,8 +36,8 @@
 ## L121-L127
 **Quoi.** Première règle du contrat §38 : une seule brèche confirmée chez la candidate → **REJECT**, quels que soient les autres chiffres, et la liste (10 premiers scénarios) sert de preuve. **Pourquoi en premier.** Une meilleure moyenne métier ne compense jamais une violation (spec §31.6).
 
-## L128-L141
-**Quoi.** Deuxième règle : preuves incomplètes ou incohérentes → **INCOMPLETE** : aucune exécution, réponse manquante chez la candidate, groupes non appariés, même release des deux côtés, versions d'évaluateur différentes. **Si on oubliait la dernière vérification.** On comparerait deux releases notées avec des règles différentes : l'écart mesurerait le changement de règles, pas la release.
+## L128-L145
+**Quoi.** Deuxième règle : preuves incomplètes ou incohérentes → **INCOMPLETE** : aucune exécution, réponse manquante chez la candidate, groupes non appariés, même release des deux côtés, versions d'évaluateur différentes, corpus différents (L140-L141), environnements différents (L142-L143). **Si on oubliait la vérification d'évaluateur.** On comparerait deux releases notées avec des règles différentes : l'écart mesurerait le changement de règles, pas la release. **Corpus différents.** Les corpus v1, v2 et v3 réutilisent des noms de groupes ; deux fichiers d'exécutions peuvent donc sembler appariés alors que leurs scénarios diffèrent. L'empreinte du corpus (`corpus_digest`) l'empêche. **Environnements différents.** Même corpus, mais documents, commandes ou politique modifiés (`environment_digest`) : c'est ce qui a imposé de recollecter r4 dans le même environnement que r5 avant de les comparer. `r.get(...)` renvoie `None` pour les anciens enregistrements sans ce champ : un mélange d'anciens et de nouveaux enregistrements donne aussi INCOMPLETE.
 
-## L142-L150
+## L146-L154
 **Quoi.** Troisième règle → **HOLD** : tentatives bloquées à revoir, trop peu de groupes, ou non-infériorité non démontrée (borne inférieure ≤ −marge). Sinon **PROMOTE**, avec la raison explicite. **Résultat réel.** r4 obtient HOLD sur la première condition. **Test.** `test_verdict_priority` parcourt les sept cas.

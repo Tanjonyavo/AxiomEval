@@ -1,4 +1,5 @@
 # src/axiomeval/policy/authz.py
+<!-- source-sha256: 6de4a446ade96fac1fd7c42452987582b640398690b51432c9baf69c6cabeb28 -->
 
 **Rôle.** Décider, hors du modèle, si un appel d'outil proposé par l'agent peut s'exécuter (semaine S6, spec §31.7). Le modèle *propose* ; ce module *dispose*. Entrées : la politique, l'identité de session, le nom de l'outil, les arguments, les ressources (commandes) et l'heure. Sortie : une `Decision` enregistrée dans la trace. Utilisé par `collect/secure_tools.py` ; testé par `tests/test_policy_s06.py`. Lien AXM : 06-C08 (politiques de sécurité et propriétés d'exécution).
 

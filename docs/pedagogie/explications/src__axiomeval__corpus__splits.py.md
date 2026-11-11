@@ -1,4 +1,5 @@
 # src/axiomeval/corpus/splits.py
+<!-- source-sha256: 6fcebf57738989a7721c0999b0bc586532e841f23b3eff369ceb1af52a836db8 -->
 
 **Rôle.** Répartir les **groupes** de scénarios entre entraînement, validation, calibration et test, de façon déterministe, puis geler cette répartition (S4, lot P03, spec §12.4). Entrée : le corpus. Sortie : dictionnaire `groupe → partition`, et le fichier `fixtures/corpus/split.json`. Utilisé par `cli_corpus` (commande `corpus`) et par la collecte. Testé par `tests/test_corpus_p03_p04.py::SplitTests`. Lien AXM : 04-C01 (« chaque groupe dans une seule partition »).
 
