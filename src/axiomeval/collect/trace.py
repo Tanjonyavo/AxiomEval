@@ -76,3 +76,32 @@ def validate_trace(events: tuple[TraceEvent, ...], run: Run, now: datetime) -> N
 
 def trace_digest(events: tuple[TraceEvent, ...]) -> str:
     return events[-1].hash if events else GENESIS
+
+
+EVENT_FIELDS = frozenset({"run_id", "seq", "kind", "at", "data", "prev_hash", "hash"})
+
+
+def serialized_trace_digest(trace: object) -> str:
+    """Re-verify a trace read back from JSON and return its last hash.
+
+    Every hash is recomputed from the event content, so a record whose trace was
+    edited, reordered or truncated, or whose digest was written by hand, is refused.
+    """
+    if not isinstance(trace, list) or not trace:
+        raise TraceError("trace must be a nonempty list of events")
+    prev_hash, run_id = GENESIS, None
+    for expected_seq, raw in enumerate(trace):
+        if not isinstance(raw, dict) or set(raw) != EVENT_FIELDS or not isinstance(raw["data"], dict):
+            raise TraceError("trace event has unexpected fields")
+        try:
+            at = datetime.fromisoformat(str(raw["at"]))
+        except ValueError as exc:
+            raise TraceError("trace event time is not an ISO datetime") from exc
+        event = TraceEvent(raw["run_id"], raw["seq"], raw["kind"], at, raw["data"], raw["prev_hash"])
+        run_id = event.run_id if run_id is None else run_id
+        if event.run_id != run_id or event.seq != expected_seq:
+            raise TraceError("trace events belong to another run or are not contiguous")
+        if event.prev_hash != prev_hash or event.hash != raw["hash"]:
+            raise TraceError("hash chain broken: event altered, removed or reordered")
+        prev_hash = event.hash
+    return prev_hash

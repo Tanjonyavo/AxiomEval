@@ -18,7 +18,8 @@ NON_CRITICAL_DENIALS = frozenset({"approval-required", "amount-above-maximum", "
                                   # Added with write-checks-v1 (F-007, F-008); same remark.
                                   "decide-after-lookup", "amount-above-order-total",
                                   # Added with read-before-write-v1 (r8a).
-                                  "lookup-required-first"})
+                                  "lookup-required-first", "delivery-condition-not-met",
+                                  "refund-request-needs-review", "refund-already-executed"})
 
 
 @dataclass(frozen=True)

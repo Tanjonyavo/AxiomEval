@@ -14,6 +14,7 @@ from axiomeval.collect.adapters import OllamaAdapter
 from axiomeval.collect.agent import run_agent
 from axiomeval.collect.knowledge import load_documents
 from axiomeval.collect.oracle import Task
+from axiomeval.collect.refund_workflow import run_conditional_refund
 from axiomeval.collect.redaction import Redactor
 from axiomeval.collect.secure_tools import SECURE_TOOL_SPECS, SecureToolbox
 from axiomeval.collect.trace import TraceRecorder, trace_digest, validate_trace
@@ -25,6 +26,7 @@ from axiomeval.ids import digest
 from axiomeval.models import Run
 from axiomeval.policy.authz import Identity, Policy
 from axiomeval.security.egress import OutputGuard
+from axiomeval.stats.plan import BoundRelease, FrozenComparison, expected_runs
 
 EVALUATOR_VERSION = "corpus-evaluator-v3"  # v2: encoded canaries and egress guard; v3: must_contain_all, intent binding
 
@@ -38,36 +40,61 @@ def draw_key(release: Release, scenario_id: str, draw: int) -> str:
                    "evaluator": EVALUATOR_VERSION})
 
 
-def environment_digest(docs, orders: dict, policy: Policy) -> str:
+def environment_digest(docs, orders: dict, policy: Policy, *, canaries: tuple[str, ...] | None = None) -> str:
     """What the agent can read or touch besides the scenario: documents, orders, policy.
 
     The corpus digest covers only the templates; a changed document or order
     would otherwise go unnoticed between two collections.
     """
     rules = {name: repr(rule) for name, rule in sorted(policy.rules.items())}
-    return digest({"documents": {d.name: d.content for d in docs}, "orders": orders,
-                   "policy": {"version": policy.version, "rules": rules}})
+    environment = {"documents": {d.name: d.content for d in docs}, "orders": orders,
+                   "policy": {"version": policy.version, "rules": rules}}
+    if canaries is not None:
+        environment.update(tools=SECURE_TOOL_SPECS, canaries=sorted(canaries))
+    return digest(environment)
 
 
-def existing_keys(path: Path) -> set[str]:
-    if not path.exists():
-        return set()
-    return {json.loads(line)["draw_key"] for line in path.read_text(encoding="utf-8").splitlines() if line.strip()}
+def existing_keys(path: Path, plan: FrozenComparison | None = None,
+                  bound_release: BoundRelease | None = None) -> set[str]:
+    rows = load_records(path) if path.exists() else []
+    for row in rows:
+        if plan is None and row.get("comparison_plan_sha256") is not None:
+            raise ValidationError("resuming this collection requires its frozen comparison plan")
+        if plan is not None and (bound_release is None or not plan.covers(row, bound_release)):
+            raise ValidationError("existing runs do not match this release and plan; use a new output file")
+    return {row["draw_key"] for row in rows}
 
 
 def collect(release: Release, corpus: Corpus, partitions: dict[str, str], policy: Policy, kb_dir: Path,
             orders: dict, canaries: tuple[str, ...], out: Path, draws: int = 1,
             only_partitions: tuple[str, ...] | None = None, adapter=None, clock=_clock,
-            base_url: str = "http://127.0.0.1:11434", limit: int | None = None) -> dict:
+            base_url: str = "http://127.0.0.1:11434", limit: int | None = None,
+            comparison_plan: FrozenComparison | None = None) -> dict:
     """Run every selected scenario `draws` times; append one JSON line per run."""
     docs = load_documents(kb_dir)
-    environment = environment_digest(docs, orders, policy)
+    environment = environment_digest(docs, orders, policy,
+                                     canaries=canaries if comparison_plan is not None else None)
     redactor = Redactor(canaries)
-    adapter = adapter or OllamaAdapter(base_url, release.model, release.temperature, release.seed, 180)
-    seen = existing_keys(out)
-    written, skipped = 0, 0
     selected = [s for s in corpus.scenarios
                 if only_partitions is None or partitions[s.group_id] in only_partitions]
+    bound_release = None
+    if comparison_plan is not None:
+        bound_release = comparison_plan.evidence.release(release.digest)
+        selected_partitions = {s.group_id: partitions[s.group_id] for s in selected}
+        if (comparison_plan.corpus_digest != corpus.digest
+                or comparison_plan.pairs != expected_runs(selected, draws)
+                or comparison_plan.partitions != selected_partitions):
+            raise ValidationError("collection design differs from the frozen comparison plan")
+        if (comparison_plan.evidence.environment_digest != environment
+                or comparison_plan.evidence.evaluator != EVALUATOR_VERSION):
+            raise ValidationError("environment or evaluator differs from the frozen comparison plan")
+        if clock() < comparison_plan.frozen_at:
+            raise ValidationError("comparison plan must be frozen before collection starts")
+    seen = existing_keys(out, comparison_plan, bound_release)
+    adapter = adapter or OllamaAdapter(base_url, release.model, release.temperature, release.seed, 180)
+    if bound_release is not None and adapter.model_digest() != bound_release.model_digest:
+        raise ValidationError("installed model differs from the frozen comparison plan")
+    written, skipped = 0, 0
     if limit is not None:
         selected = selected[:limit]
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -84,6 +111,11 @@ def collect(release: Release, corpus: Corpus, partitions: dict[str, str], policy
                 record["corpus_id"], record["corpus_version"] = corpus.corpus_id, corpus.version
                 record["corpus_digest"] = corpus.digest
                 record["environment_digest"] = environment
+                record["comparison_plan_sha256"] = comparison_plan.sha256 if comparison_plan else None
+                if bound_release is not None:
+                    record["model_digest"] = adapter.model_digest()
+                    if not comparison_plan.covers(record, bound_release):
+                        raise ValidationError("run evidence differs from the frozen comparison plan")
                 line = json.dumps(record, ensure_ascii=False, default=str)
                 redactor.assert_clean(line)
                 stream.write(line + "\n")
@@ -105,13 +137,18 @@ def _one(release, scenario, partition, draw, key, policy, docs, orders, redactor
     toolbox = SecureToolbox(docs, orders, policy, identity, clock,
                             request=scenario.question if release.intent_binding else None,
                             write_checks=release.write_checks, read_before_write=release.read_before_write,
-                            guided_refusals=release.guided_refusals)
+                            guided_refusals=release.guided_refusals,
+                            refund_request_guard=release.refund_request_guard)
     recorder = TraceRecorder(run, clock, redactor)
     task = Task(scenario.scenario_id, scenario.question, (), (), scenario.label_frozen_at)
     guard = OutputGuard(canaries, release.protected_values) if release.output_guard else None
-    answer, _ = run_agent(adapter, toolbox, docs, task, recorder, release.max_steps,
-                          system=release.system_prompt, tool_specs=SECURE_TOOL_SPECS,
-                          retrieval_k=release.retrieval_k, output_guard=guard)
+    answer = None
+    if release.route_conditional_refunds:
+        answer = run_conditional_refund(task, toolbox, recorder, guard, route_reviews=release.route_refund_reviews)
+    if answer is None:
+        answer, _ = run_agent(adapter, toolbox, docs, task, recorder, release.max_steps,
+                              system=release.system_prompt, tool_specs=SECURE_TOOL_SPECS,
+                              retrieval_k=release.retrieval_k, output_guard=guard)
     events = tuple(recorder.events)
     validate_trace(events, run, clock())
     authz = [e.data for e in events if e.kind == "authz"]

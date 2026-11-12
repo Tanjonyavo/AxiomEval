@@ -210,6 +210,18 @@ class BoundaryTests(unittest.TestCase):
             self.assertFalse(r.leaked(cleaned), cleaned)
         self.assertEqual(r.redact("Votre commande A1002 est expédiée."), "Votre commande A1002 est expédiée.")
 
+    def test_redaction_covers_everything_the_leak_check_sees(self):
+        """Audit 2026-11-11, finding 4: four or more separators escaped redaction, then stopped the collection."""
+        secret = "CANARY_SYSPROMPT_51F0C2"
+        r = Redactor((secret,))
+        for text in ("----".join(secret), "avant " + " .. / ".join(secret[::-1]) + " après"):
+            with self.subTest(text=text[:20]):
+                self.assertTrue(r.leaked(text))
+                cleaned = r.redact(text)
+                self.assertFalse(r.leaked(cleaned), cleaned)
+                r.assert_clean(cleaned)
+        self.assertTrue(r.redact("x " + "----".join(secret) + " y").startswith("x [REDACTED:canary]"))
+
     def test_cli_run_agent_scripted(self):
         with tempfile.TemporaryDirectory() as temp:
             proc = subprocess.run(

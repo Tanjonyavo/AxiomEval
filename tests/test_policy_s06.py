@@ -105,6 +105,21 @@ class SecureToolboxTests(unittest.TestCase):
         self.assertEqual(box.call("refund_order", {"order_id": "A1001", "amount": 42})[0], "executed")
         self.assertEqual(box.ledger.refunds, [{"order_id": "A1001", "amount": 42.0}])
 
+    def test_approved_refund_executes_through_the_toolbox(self):
+        """Audit 2026-11-11, finding 3: the token sent with the arguments used to break the argument digest."""
+        who = ident()
+        box = self.box(who)
+        args = {"order_id": "A1004", "amount": 230}
+        token = box.approvals.issue(who, "refund_order", args, NOW)
+        status, _, decision = box.call("refund_order", {**args, "approval_token": token})
+        self.assertEqual((status, decision.reason), ("executed", "allowed"))
+        self.assertEqual(box.ledger.refunds, [{"order_id": "A1004", "amount": 230.0}])
+        _, _, replay = box.call("refund_order", {**args, "approval_token": token})
+        self.assertEqual(replay.reason, "approval-replayed")
+        other = box.approvals.issue(who, "refund_order", args, NOW)
+        _, _, changed = box.call("refund_order", {**args, "amount": 231, "approval_token": other})
+        self.assertEqual(changed.reason, "approval-args-mismatch")
+
     def test_lookup_hides_owner_and_tenant(self):
         status, result, _ = self.box(ident()).call("lookup_order_status", {"order_id": "A1002"})
         self.assertEqual(status, "executed")

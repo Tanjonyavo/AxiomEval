@@ -11,7 +11,7 @@ from axiomeval.models.validation import text
 
 FIELDS = {"release_id", "description", "model", "temperature", "seed", "retrieval_k", "max_steps", "system_prompt"}
 OPTIONAL = {"output_guard", "protected_values", "intent_binding", "write_checks", "read_before_write",
-            "guided_refusals"}
+            "guided_refusals", "refund_request_guard", "route_conditional_refunds", "route_refund_reviews"}
 # egress-v2: the guard also checks tool arguments before execution (fix for finding F-001).
 GUARD_VERSION = "egress-v2"
 # egress-v3: egress-v2 plus values protected by the release (fix for finding F-003).
@@ -25,6 +25,9 @@ WRITE_CHECKS_VERSION = "write-checks-v1"
 READ_BEFORE_WRITE_VERSION = "read-before-write-v1"
 # Refusal texts that tell the model what to do next (release r8b).
 GUIDED_REFUSALS_VERSION = "guided-refusals-v1"
+REFUND_REQUEST_GUARD_VERSION = "refund-request-guard-v1"
+CONDITIONAL_REFUND_WORKFLOW_VERSION = "conditional-refund-workflow-v1"
+REFUND_REVIEW_ROUTING_VERSION = "refund-review-routing-v1"
 
 
 @dataclass(frozen=True)
@@ -44,6 +47,9 @@ class Release:
     write_checks: bool = False
     read_before_write: bool = False
     guided_refusals: bool = False
+    refund_request_guard: bool = False
+    route_conditional_refunds: bool = False
+    route_refund_reviews: bool = False
 
     def identity(self) -> dict:
         """Everything that changes behaviour; the digest of this dict names the release."""
@@ -64,6 +70,12 @@ class Release:
             identity["read_before_write"] = READ_BEFORE_WRITE_VERSION
         if self.guided_refusals:
             identity["guided_refusals"] = GUIDED_REFUSALS_VERSION
+        if self.refund_request_guard:
+            identity["refund_request_guard"] = REFUND_REQUEST_GUARD_VERSION
+        if self.route_conditional_refunds:
+            identity["route_conditional_refunds"] = CONDITIONAL_REFUND_WORKFLOW_VERSION
+        if self.route_refund_reviews:
+            identity["route_refund_reviews"] = REFUND_REVIEW_ROUTING_VERSION
         return identity
 
 
@@ -86,11 +98,16 @@ def load_release(path: Path) -> Release:
         raise ConfigurationError("write_checks must be true or false")
     if raw.get("write_checks", False) and not raw.get("intent_binding", False):
         raise ConfigurationError("write_checks need intent_binding: true")
-    for option in ("read_before_write", "guided_refusals"):
+    for option in ("read_before_write", "guided_refusals", "refund_request_guard",
+                   "route_conditional_refunds", "route_refund_reviews"):
         if type(raw.get(option, False)) is not bool:
             raise ConfigurationError(f"{option} must be true or false")
         if raw.get(option, False) and not raw.get("write_checks", False):
             raise ConfigurationError(f"{option} needs write_checks: true")
+    if raw.get("route_conditional_refunds", False) and not raw.get("refund_request_guard", False):
+        raise ConfigurationError("route_conditional_refunds needs refund_request_guard: true")
+    if raw.get("route_refund_reviews", False) and not raw.get("route_conditional_refunds", False):
+        raise ConfigurationError("route_refund_reviews needs route_conditional_refunds: true")
     if protected and not raw.get("output_guard", False):
         raise ConfigurationError("protected_values need output_guard: true")
     if "{context}" not in raw["system_prompt"]:
@@ -105,5 +122,6 @@ def load_release(path: Path) -> Release:
                       raw["max_steps"], raw["system_prompt"], "", raw.get("output_guard", False),
                       tuple(v.strip() for v in protected), raw.get("intent_binding", False),
                       raw.get("write_checks", False), raw.get("read_before_write", False),
-                      raw.get("guided_refusals", False))
+                      raw.get("guided_refusals", False), raw.get("refund_request_guard", False),
+                      raw.get("route_conditional_refunds", False), raw.get("route_refund_reviews", False))
     return Release(**{**release.__dict__, "digest": digest(release.identity())})

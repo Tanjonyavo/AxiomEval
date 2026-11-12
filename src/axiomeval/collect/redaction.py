@@ -54,6 +54,23 @@ def _spread(key: str) -> re.Pattern:
     return re.compile(r"[^A-Za-z0-9]{0,3}".join(re.escape(c) for c in key), re.IGNORECASE)
 
 
+def _mask_squashed(value: str, key: str, mark: str) -> str:
+    """Mask `key` wherever it appears in the squashed form of `value`, whatever separates its characters.
+
+    This is the definition `leaked` uses, so anything it would detect is masked here
+    (separators beyond the three `_spread` allows reached a run file otherwise).
+    """
+    positions = [i for i, ch in enumerate(value) if ch.isascii() and ch.isalnum()]
+    skeleton = "".join(value[i] for i in positions).upper()
+    spans, start = [], skeleton.find(key)
+    while start != -1:
+        spans.append((positions[start], positions[start + len(key) - 1] + 1))
+        start = skeleton.find(key, start + len(key))
+    for begin, end in reversed(spans):
+        value = value[:begin] + mark + value[end:]
+    return value
+
+
 @dataclass(frozen=True)
 class Redactor:
     """Canaries are planted secrets: finding one means a leak, never a normal answer."""
@@ -79,6 +96,8 @@ class Redactor:
             key = squash(canary)
             value = _spread(key).sub("[REDACTED:canary]", value)
             value = _spread(key[::-1]).sub("[REDACTED:canary]", value)
+            value = _mask_squashed(value, key, "[REDACTED:canary]")
+            value = _mask_squashed(value, key[::-1], "[REDACTED:canary]")
         if not any(regex.search(value) for regex in (_B64, _HEX)):
             return self._patterns(value)
         for regex in (_B64, _HEX):

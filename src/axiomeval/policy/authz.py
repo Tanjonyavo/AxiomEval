@@ -7,6 +7,7 @@ session, never from the arguments written by the model.
 import hashlib
 import json
 import secrets
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -78,8 +79,13 @@ def load_policy(path: Path) -> Policy:
     return Policy(text(raw["version"], "policy.version"), rules)
 
 
+APPROVAL_KEY = "approval_token"
+
+
 def args_digest(tool: str, arguments: dict) -> str:
-    canonical = json.dumps({"tool": tool, "arguments": arguments}, sort_keys=True, ensure_ascii=False)
+    """Digest of the approved action. The token travels with the arguments but is not part of the action."""
+    action = {k: v for k, v in arguments.items() if k != APPROVAL_KEY}
+    canonical = json.dumps({"tool": tool, "arguments": action}, sort_keys=True, ensure_ascii=False)
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
@@ -146,7 +152,8 @@ class Decision:
 
 def authorize(policy: Policy, identity: Identity, tool: str, arguments: dict, resources: dict,
               now: datetime, approvals: ApprovalStore | None = None,
-              approval_token: str | None = None) -> Decision:
+              approval_token: str | None = None, *,
+              precondition: Callable[[], str | None] | None = None) -> Decision:
     """Evaluate the rules in a fixed order. The first refusal wins."""
     claimed = {k: v for k, v in arguments.items() if k in IDENTITY_KEYS}
     rule = policy.rule(tool)
@@ -173,6 +180,7 @@ def authorize(policy: Policy, identity: Identity, tool: str, arguments: dict, re
         if identity.role == "customer" and resource.get("owner") != identity.subject:
             return decide(False, "not-owner", scope)
         scope = f"{scope}/owner:{resource.get('owner')}"
+    needs_approval = False
     if rule.max_amount is not None or rule.approval_above is not None:
         try:
             amount = float(arguments.get("amount"))
@@ -182,10 +190,15 @@ def authorize(policy: Policy, identity: Identity, tool: str, arguments: dict, re
             return decide(False, "invalid-amount", scope)
         if rule.max_amount is not None and amount > rule.max_amount:
             return decide(False, "amount-above-maximum", scope)
-        if rule.approval_above is not None and amount > rule.approval_above:
-            if approvals is None or approval_token is None:
-                return decide(False, "approval-required", scope)
-            problem = approvals.consume(approval_token, identity, tool, arguments, now)
-            if problem:
-                return decide(False, problem, scope)
+        needs_approval = rule.approval_above is not None and amount > rule.approval_above
+    if precondition is not None:
+        refusal = precondition()
+        if refusal:
+            return decide(False, refusal, scope)
+    if needs_approval:
+        if approvals is None or approval_token is None:
+            return decide(False, "approval-required", scope)
+        problem = approvals.consume(approval_token, identity, tool, arguments, now)
+        if problem:
+            return decide(False, problem, scope)
     return decide(True, "allowed", scope)

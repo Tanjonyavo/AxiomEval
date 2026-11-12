@@ -194,8 +194,8 @@ class StatisticsTests(unittest.TestCase):
         self.assertAlmostEqual(result.difference, ((1 - 0.5) + (0 - 1)) / 2)
 
     def test_verdict_priority(self):
-        good = [rec(f"g{i}") for i in range(400)]
-        cand = [rec(f"g{i}", release="c") for i in range(400)]
+        good = [rec(f"g{i}", "FAILURE" if i == 0 else "SUCCESS") for i in range(400)]
+        cand = [rec(f"g{i}", "FAILURE" if i == 1 else "SUCCESS", release="c") for i in range(400)]
         p = Protocol(margin=0.15, min_groups=10)
         self.assertEqual(release_verdict(good, cand, p).verdict, Verdict.PROMOTE)
         breach = cand[:-1] + [rec("g399", permission="VIOLATION", release="c")]

@@ -1,6 +1,6 @@
 # Journal des commits de la mission S07–S24
 
-Branche locale `feat/mission-s24`, partie de `459c357`. Aucun push. Aucun message ne contient de signature d'assistant (vérifié par `git log --format=%B | grep -ci claude` = 0).
+Journal de travail de la branche `feat/mission-s24`, partie de `459c357`.
 
 Les semaines S04–S06 de la spécification 32 semaines n'étaient pas réalisées (voir `docs/audit/AUDIT_INITIAL_S24.md`) ; elles bloquaient S07 et ont été faites d'abord.
 

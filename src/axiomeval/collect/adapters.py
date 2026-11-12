@@ -85,6 +85,15 @@ class OllamaAdapter:
                           int(data.get("prompt_eval_count", 0)), int(data.get("eval_count", 0)),
                           round(time.perf_counter() - start, 4))
 
+    def model_digest(self) -> str:
+        """Resolve the configured local model tag to its installed artifact."""
+        tags = {m.get("name"): m for m in self._get("/api/tags").get("models", [])}
+        entry = tags.get(self.model) or tags.get(f"{self.model}:latest", {})
+        fingerprint = entry.get("digest")
+        if not isinstance(fingerprint, str) or not fingerprint:
+            raise AdapterError("installed model digest is unavailable")
+        return fingerprint
+
     def describe(self) -> dict:
         """Provenance and resources: model digest, licence, memory used by the loaded model."""
         show = self._post("/api/show", {"model": self.model})

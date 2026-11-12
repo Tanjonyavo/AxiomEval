@@ -15,6 +15,32 @@ SYSTEM = (
 )
 
 
+def record_answer(answer: str, recorder: TraceRecorder, output_guard=None) -> str:
+    if output_guard is not None:
+        checked = output_guard.check(answer)
+        if checked.blocked:
+            recorder.add("guard", findings=list(checked.findings), action="answer-replaced")
+        answer = checked.answer
+    recorder.add("output", answer=answer)
+    return answer
+
+
+def call_tool(toolbox, recorder: TraceRecorder, name: str, arguments: dict, output_guard=None):
+    recorder.add("tool_call", tool=name, arguments=arguments)
+    if output_guard is not None:
+        checked = output_guard.check(json.dumps(arguments, ensure_ascii=False))
+        if checked.blocked:
+            recorder.add("guard", findings=list(checked.findings), action="tool-call-refused", tool=name)
+            result = "Refusé : un argument contient une donnée protégée."
+            recorder.add("tool_result", tool=name, status="guarded", result=result)
+            return "guarded", result
+    outcome = toolbox.call(name, arguments)
+    if len(outcome) == 3:
+        recorder.add("authz", **outcome[2].record())
+    recorder.add("tool_result", tool=name, status=outcome[0], result=outcome[1])
+    return outcome
+
+
 def run_agent(adapter, toolbox: Toolbox, docs: tuple[Document, ...], task: Task,
               recorder: TraceRecorder, max_steps: int, system: str = SYSTEM,
               tool_specs: tuple[dict, ...] = TOOL_SPECS, retrieval_k: int = 2,
@@ -41,35 +67,14 @@ def run_agent(adapter, toolbox: Toolbox, docs: tuple[Document, ...], task: Task,
                      prompt_tokens=reply.prompt_tokens, output_tokens=reply.output_tokens,
                      content=reply.content, tool_calls=[[n, a] for n, a in reply.tool_calls])
         if not reply.tool_calls:
-            answer = reply.content
-            if output_guard is not None:
-                checked = output_guard.check(answer)
-                if checked.blocked:
-                    recorder.add("guard", findings=list(checked.findings), action="answer-replaced")
-                answer = checked.answer
-            recorder.add("output", answer=answer)
-            return answer, calls
+            return record_answer(reply.content, recorder, output_guard), calls
         if hasattr(toolbox, "begin_step"):
             toolbox.begin_step()
         messages.append({"role": "assistant", "content": reply.content, "tool_calls": [
             {"function": {"name": n, "arguments": a}} for n, a in reply.tool_calls]})
         for name, arguments in reply.tool_calls:
-            recorder.add("tool_call", tool=name, arguments=arguments)
-            if output_guard is not None:
-                checked = output_guard.check(json.dumps(arguments, ensure_ascii=False))
-                if checked.blocked:  # finding F-001: canary passed as a tool argument
-                    recorder.add("guard", findings=list(checked.findings), action="tool-call-refused", tool=name)
-                    calls.append((name, "guarded"))
-                    result = "Refusé : un argument contient une donnée protégée."
-                    recorder.add("tool_result", tool=name, status="guarded", result=result)
-                    messages.append({"role": "tool", "content": result, "tool_name": name})
-                    continue
-            outcome = toolbox.call(name, arguments)
-            status, result = outcome[0], outcome[1]
-            if len(outcome) == 3:
-                recorder.add("authz", **outcome[2].record())
+            status, result = call_tool(toolbox, recorder, name, arguments, output_guard)[:2]
             calls.append((name, status))
-            recorder.add("tool_result", tool=name, status=status, result=result)
             messages.append({"role": "tool", "content": result, "tool_name": name})
     recorder.add("error", step=max_steps, message="max-steps-reached")
     return None, calls

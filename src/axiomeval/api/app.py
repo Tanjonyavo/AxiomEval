@@ -98,7 +98,10 @@ def create_app(store: Store, token: str | None = None) -> FastAPI:
             base = [r for r in base if r["partition"] in body.partitions]
             cand = [r for r in cand if r["partition"] in body.partitions]
         protocol = Protocol(body.alpha, body.margin, body.min_groups)
-        result = release_verdict(base, cand, protocol)
+        try:
+            result = release_verdict(base, cand, protocol)
+        except (KeyError, TypeError, ValueError) as exc:  # rows stored before import validation existed
+            raise HTTPException(status_code=422, detail="stored records cannot be scored") from exc
         inputs = digest({"baseline": sorted(r["draw_key"] for r in base),
                          "candidate": sorted(r["draw_key"] for r in cand)})
         protocol_dict = {**asdict(protocol), "partitions": body.partitions}

@@ -1,25 +1,45 @@
 """S8: API contract, persistence, migrations, idempotence and recovery (gate G8)."""
+import copy
+import functools
 import sqlite3
 import tempfile
+import threading
 import unittest
+from dataclasses import asdict
+from datetime import datetime, timezone
 from pathlib import Path
 
 from fastapi.testclient import TestClient
 
 from axiomeval.api.app import create_app
 from axiomeval.api.store import Store, StoreError
+from axiomeval.collect.redaction import Redactor
+from axiomeval.collect.trace import TraceRecorder
+from axiomeval.models import Run
 
 CANARIES = ("AXM-CANARY-7F3A91C2E5", "CANARY_SYSPROMPT_51F0C2")
 TOKEN = "test-token-not-a-secret"
 AUTH = {"Authorization": f"Bearer {TOKEN}"}
 BASE, CAND = "b" * 64, "c" * 64
+T0 = datetime(2026, 11, 11, 12, 0, tzinfo=timezone.utc)
+
+
+@functools.lru_cache(maxsize=None)
+def chained_trace(tag: str) -> tuple[list, str]:
+    """A real hash-chained trace, serialized as a collection writes it; one per tag."""
+    recorder = TraceRecorder(Run("target", "scenario", id=f"RUN-{tag}", started_at=T0), lambda: T0,
+                             Redactor(CANARIES))
+    recorder.add("input", question=f"question {tag}")
+    recorder.add("output", answer="réponse")
+    return [dict(asdict(e), at=str(e.at)) for e in recorder.events], recorder.events[-1].hash
 
 
 def rec(i, release=BASE, business="SUCCESS", permission="OK", trace="t"):
+    events, last = chained_trace(trace)
     return {"draw_key": f"{release[:1]}-{i:04d}", "release_digest": release, "release_id": "r-" + release[:1],
             "evaluator": "corpus-evaluator-v2", "scenario_id": f"g{i}-v0", "group_id": f"g{i}", "kind": "information",
-            "partition": "test", "business": business, "permission": permission, "trace_digest": trace,
-            "security": {"attack_succeeded": False, "attack_attempted": False}}
+            "partition": "test", "business": business, "permission": permission, "trace_digest": last,
+            "trace": copy.deepcopy(events), "security": {"attack_succeeded": False, "attack_attempted": False}}
 
 
 class StoreTests(unittest.TestCase):
@@ -73,6 +93,48 @@ class StoreTests(unittest.TestCase):
         with self.assertRaises(StoreError):
             self.store.import_records([rec(12), rec(10, trace="other")])
         self.assertEqual(self.store.releases()[0]["runs"], 2)
+
+    def test_trace_must_match_its_digest(self):
+        """Audit 2026-11-11, finding 2: a hand-written digest or an edited trace was accepted."""
+        forged = dict(rec(0), trace_digest="f" * 64)
+        edited = rec(1)
+        edited["trace"][1]["data"]["answer"] = "autre réponse"
+        reordered = rec(2)
+        reordered["trace"].reverse()
+        for name, bad in (("forged", forged), ("edited", edited), ("reordered", reordered),
+                          ("missing", {k: v for k, v in rec(3).items() if k != "trace"}),
+                          ("empty", dict(rec(4), trace=[]))):
+            with self.subTest(name), self.assertRaises(StoreError):
+                self.store.import_records([bad])
+        self.assertEqual(self.store.releases(), [])
+
+    def test_fields_the_verdict_reads_are_validated(self):
+        for name, bad in (("security", dict(rec(0), security={})),
+                          ("security type", dict(rec(0), security={"attack_attempted": 0, "attack_succeeded": 0})),
+                          ("kind", dict(rec(0), kind="other")), ("partition", dict(rec(0), partition="holdout")),
+                          ("release", dict(rec(0), release_digest="short")), ("group", dict(rec(0), group_id=""))):
+            with self.subTest(name), self.assertRaises(StoreError):
+                self.store.import_records([bad])
+
+    def test_concurrent_imports_keep_every_batch(self):
+        """Audit 2026-11-11, finding 1: threads sharing the connection lost rows and broke atomicity."""
+        errors = []
+
+        def worker(t):
+            for b in range(10):
+                try:
+                    self.store.import_records([dict(rec(1000 * t + 25 * b + i), group_id=f"t{t}")
+                                               for i in range(25)])
+                except Exception as exc:  # noqa: BLE001 - any error is a failure here
+                    errors.append(repr(exc))
+
+        threads = [threading.Thread(target=worker, args=(t,)) for t in range(4)]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+        self.assertEqual(errors, [])
+        self.assertEqual(self.store.releases()[0]["runs"], 1000)
 
     def test_secret_never_stored(self):
         leaking = dict(rec(0), note=f"jeton {CANARIES[0]}")
@@ -134,6 +196,8 @@ class ApiTests(unittest.TestCase):
                 self.assertEqual(self.client.post("/v1/runs:import", json=body, headers=AUTH).status_code, 422)
         missing = {"records": [{"draw_key": "x"}]}
         self.assertEqual(self.client.post("/v1/runs:import", json=missing, headers=AUTH).status_code, 422)
+        broken = {"records": [dict(rec(500), security={}, kind="attack")]}
+        self.assertEqual(self.client.post("/v1/runs:import", json=broken, headers=AUTH).status_code, 422)
 
     def test_oversized_body_refused(self):
         response = self.client.post("/v1/runs:import", content=b"{}",
@@ -141,7 +205,9 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 413)
 
     def test_verdict_is_computed_stored_and_idempotent(self):
-        self.load(400)
+        records = [rec(i, BASE, business="FAILURE" if i == 0 else "SUCCESS") for i in range(400)]
+        records += [rec(i, CAND, business="FAILURE" if i == 1 else "SUCCESS") for i in range(400)]
+        self.assertEqual(self.client.post("/v1/runs:import", json={"records": records}, headers=AUTH).status_code, 200)
         body = {"baseline_release": BASE, "candidate_release": CAND, "margin": 0.15}
         first = self.client.post("/v1/verdicts", json=body, headers=AUTH).json()
         second = self.client.post("/v1/verdicts", json=body, headers=AUTH).json()
